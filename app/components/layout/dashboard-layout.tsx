@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Layout, Menu, theme } from 'antd';
-import { UserOutlined, SettingOutlined, ProfileOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined, ProfileOutlined, QuestionCircleOutlined, FileTextOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -24,6 +24,11 @@ const menuItems = [
     key: 'questions',
     icon: <QuestionCircleOutlined />,
     label: <Link href="/dashboard/questions">题目管理</Link>,
+  },
+  {
+    key: 'tests',
+    icon: <FileTextOutlined />,
+    label: <Link href="/dashboard/tests">测试管理</Link>,
   },
   {
     key: 'settings',
