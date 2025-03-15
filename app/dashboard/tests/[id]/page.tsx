@@ -21,6 +21,15 @@ import dayjs from 'dayjs';
 const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
 
+// 在组件顶部定义汇丰银行主题色（同上）
+const HSBC_COLORS = {
+  primary: '#DB0011',    // 汇丰红色
+  secondary: '#333333',  // 深灰色
+  light: '#F5F5F5',      // 浅灰色背景
+  white: '#FFFFFF',      // 白色
+  border: '#E5E5E5',     // 边框色
+};
+
 export default function TestDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -89,11 +98,11 @@ export default function TestDetailPage() {
   // 获取测试状态标签颜色
   const getStatusColor = (status: string) => {
     const statusColorMap: Record<string, string> = {
-      created: 'blue',
-      activated: 'cyan',
-      started: 'green',
-      completed: 'purple',
-      cancelled: 'red',
+      created: HSBC_COLORS.secondary,
+      activated: '#007799',
+      started: '#006633',
+      completed: HSBC_COLORS.primary,
+      cancelled: '#999999',
     };
     return statusColorMap[status] || 'default';
   };
@@ -150,7 +159,7 @@ export default function TestDetailPage() {
           type="link" 
           icon={<ArrowLeftOutlined />}
           onClick={handleGoBack}
-          style={{ paddingLeft: 0 }}
+          style={{ paddingLeft: 0, color: HSBC_COLORS.primary }}
         >
           返回测试列表
         </Button>
@@ -160,11 +169,18 @@ export default function TestDetailPage() {
       <Card 
         title={
           <Space size="middle">
-            <Title level={4} style={{ margin: 0 }}>测试详情</Title>
+            <Title level={4} style={{ margin: 0, color: HSBC_COLORS.secondary }}>测试详情</Title>
             <Tag color={getStatusColor(test.status)}>{testStatusMap[test.status] || test.status}</Tag>
           </Space>
         }
-        style={{ marginBottom: '24px' }}
+        style={{ 
+          marginBottom: '24px',
+          borderRadius: '4px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}
+        headStyle={{ 
+          borderBottom: `2px solid ${HSBC_COLORS.primary}` 
+        }}
       >
         <Descriptions bordered column={{ xxl: 4, xl: 3, lg: 3, md: 2, sm: 1, xs: 1 }}>
           <Descriptions.Item label="测试ID">{test.test_id}</Descriptions.Item>
@@ -207,6 +223,7 @@ export default function TestDetailPage() {
                     percent={testResult.score}
                     format={percent => `${percent}分`}
                     status={testResult.score >= 60 ? 'success' : 'exception'}
+                    strokeColor={testResult.score >= 60 ? '#006633' : HSBC_COLORS.primary}
                   />
                   <div style={{ marginTop: '8px' }}>总分</div>
                 </div>

@@ -26,6 +26,15 @@ import { useRouter } from 'next/navigation';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
+// 在组件顶部定义汇丰银行主题色
+const HSBC_COLORS = {
+  primary: '#DB0011',    // 汇丰红色
+  secondary: '#333333',  // 深灰色
+  light: '#F5F5F5',      // 浅灰色背景
+  white: '#FFFFFF',      // 白色
+  border: '#E5E5E5',     // 边框色
+};
+
 export default function TestsPage() {
   const [tests, setTests] = useState<Test[]>([]);
   const [loading, setLoading] = useState(false);
@@ -276,17 +285,22 @@ export default function TestsPage() {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
-        <Tag color={
-          status === 'created' ? 'blue' :
-          status === 'activated' ? 'cyan' :
-          status === 'started' ? 'green' :
-          status === 'completed' ? 'purple' :
-          'red'
-        }>
-          {testStatusMap[status] || status}
-        </Tag>
-      ),
+      render: (status: string) => {
+        // 使用汇丰主题色修改状态标签
+        const statusColorMap: Record<string, string> = {
+          created: HSBC_COLORS.secondary,
+          activated: '#007799',         // 保留蓝色但调暗
+          started: '#006633',           // 保留绿色但调暗
+          completed: HSBC_COLORS.primary, // 使用汇丰红色
+          expired: '#999999',           // 灰色
+        };
+
+        return (
+          <Tag color={statusColorMap[status] || HSBC_COLORS.secondary}>
+            {testStatusMap[status] || status}
+          </Tag>
+        );
+      },
     },
     {
       title: '职位',
@@ -327,6 +341,7 @@ export default function TestsPage() {
             type="link" 
             icon={<EyeOutlined />} 
             onClick={() => router.push(`/dashboard/tests/${record.test_id}`)}
+            style={{ color: HSBC_COLORS.primary }}
           >
             详情
           </Button>
@@ -336,6 +351,10 @@ export default function TestsPage() {
               size="small"
               icon={<EditOutlined />} 
               onClick={() => showEditModal(record)}
+              style={{ 
+                backgroundColor: HSBC_COLORS.primary,
+                borderColor: HSBC_COLORS.primary
+              }}
             />
           </Tooltip>
           <Tooltip title="删除">
@@ -368,6 +387,10 @@ export default function TestsPage() {
           type="primary" 
           icon={<PlusOutlined />} 
           onClick={showAddModal}
+          style={{ 
+            backgroundColor: HSBC_COLORS.primary,
+            borderColor: HSBC_COLORS.primary
+          }}
         >
           添加测试
         </Button>
@@ -381,6 +404,12 @@ export default function TestsPage() {
         pagination={pagination}
         onChange={handleTableChange}
         scroll={{ x: 1300 }}
+        style={{ 
+          borderRadius: '4px',
+          overflow: 'hidden',
+          border: `1px solid ${HSBC_COLORS.border}`
+        }}
+        className="hsbc-table"
       />
 
       <Modal

@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import './styles/hsbc-theme.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
