@@ -43,11 +43,6 @@
   color: var(--hsbc-primary);
 }
 
-/* 为表格添加顶部边框，保持 HSBC 风格但更加细微 */
-.hsbc-table .ant-table-container {
-  border-top: 2px solid var(--hsbc-primary);
-}
-
 /* 卡片标题样式 */
 .ant-card-head {
   border-bottom: 2px solid var(--hsbc-primary);

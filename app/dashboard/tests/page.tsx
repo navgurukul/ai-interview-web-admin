@@ -409,7 +409,6 @@ export default function TestsPage() {
           overflow: 'hidden',
           border: `1px solid ${HSBC_COLORS.border}`
         }}
-        className="hsbc-table"
       />
 
       <Modal
