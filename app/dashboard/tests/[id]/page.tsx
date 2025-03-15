@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, Descriptions, Spin, Tag, Typography, Divider, List, Progress, Alert, Space, Button, Timeline, Collapse } from 'antd';
 import { ArrowLeftOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import ReactMarkdown from 'react-markdown';
 import { 
   Test, 
   TestResult, 
@@ -242,7 +243,9 @@ export default function TestDetailPage() {
                   
                   <Paragraph>
                     <Title level={5}>测试总结</Title>
-                    <Text>{testResult.summary}</Text>
+                    <div className="markdown-content">
+                      <ReactMarkdown>{testResult.summary}</ReactMarkdown>
+                    </div>
                   </Paragraph>
                 </div>
               </div>
@@ -263,7 +266,9 @@ export default function TestDetailPage() {
                   >
                     <Descriptions bordered column={1} layout="vertical">
                       <Descriptions.Item label="问题">
-                        <div style={{ whiteSpace: 'pre-wrap' }}>{qa.question}</div>
+                        <div className="markdown-content">
+                          <ReactMarkdown>{qa.question}</ReactMarkdown>
+                        </div>
                       </Descriptions.Item>
                       <Descriptions.Item label="回答">
                         <div style={{ whiteSpace: 'pre-wrap' }}>{qa.answer}</div>

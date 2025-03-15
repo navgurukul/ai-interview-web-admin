@@ -67,4 +67,93 @@
 
 .ant-collapse-item-active .ant-collapse-header {
   border-left: 2px solid var(--hsbc-primary);
+}
+
+/* Markdown内容样式 */
+.markdown-content {
+  background-color: var(--hsbc-light);
+  padding: 16px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  color: var(--hsbc-secondary);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.markdown-content h1 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--hsbc-border);
+  padding-bottom: 0.3em;
+}
+
+.markdown-content h2 {
+  font-size: 1.3em;
+  border-bottom: 1px solid var(--hsbc-border);
+  padding-bottom: 0.3em;
+}
+
+.markdown-content p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.markdown-content ul, 
+.markdown-content ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+
+.markdown-content pre {
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  padding: 16px;
+  overflow: auto;
+}
+
+.markdown-content code {
+  background-color: rgba(175, 184, 193, 0.2);
+  border-radius: 3px;
+  padding: 0.2em 0.4em;
+  font-family: monospace;
+}
+
+.markdown-content blockquote {
+  border-left: 3px solid var(--hsbc-primary);
+  padding-left: 16px;
+  color: #666;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.markdown-content a {
+  color: var(--hsbc-primary);
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid var(--hsbc-border);
+  padding: 8px;
+}
+
+.markdown-content table th {
+  background-color: #f8f8f8;
 } 
