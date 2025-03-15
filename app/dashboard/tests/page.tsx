@@ -252,15 +252,8 @@ export default function TestsPage() {
     return user ? user.user_name : '未知用户';
   };
 
-  // 表格列定义
+  // 表格列定义 - 简化版
   const columns = [
-    {
-      title: '测试ID',
-      dataIndex: 'test_id',
-      key: 'test_id',
-      width: 100,
-      ellipsis: true,
-    },
     {
       title: '激活码',
       dataIndex: 'activate_code',
@@ -300,36 +293,14 @@ export default function TestsPage() {
       dataIndex: 'job_title',
       key: 'job_title',
       render: (text: string, record: Test) => record.job_title || getJobTitleById(record.job_id),
+      ellipsis: true,
     },
     {
       title: '用户',
       dataIndex: 'user_name',
       key: 'user_name',
       render: (text: string, record: Test) => record.user_name || getUserNameById(record.user_id),
-    },
-    {
-      title: '时长',
-      dataIndex: 'test_time',
-      key: 'test_time',
-      render: (time: number) => `${time}分钟`,
-    },
-    {
-      title: '开始时间',
-      dataIndex: 'start_date',
-      key: 'start_date',
-      render: (date: string) => dayjs(date).format('YYYY-MM-DD HH:mm'),
-    },
-    {
-      title: '过期时间',
-      dataIndex: 'expire_date',
-      key: 'expire_date',
-      render: (date: string) => dayjs(date).format('YYYY-MM-DD HH:mm'),
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'create_date',
-      key: 'create_date',
-      render: (date: string) => dayjs(date).format('YYYY-MM-DD HH:mm'),
+      ellipsis: true,
     },
     {
       title: '测试类型',
@@ -338,43 +309,43 @@ export default function TestsPage() {
       render: (type: string) => testTypeMap[type] || type,
     },
     {
-      title: '语言',
-      dataIndex: 'language',
-      key: 'language',
-      render: (language: string) => languageMap[language] || language,
-    },
-    {
-      title: '难度',
-      dataIndex: 'difficulty',
-      key: 'difficulty',
-      render: (difficulty: string) => difficultyMap[difficulty] || difficulty,
+      title: '有效期限',
+      key: 'dateRange',
+      render: (text: string, record: Test) => (
+        <>
+          {dayjs(record.start_date).format('MM-DD')} 至 {dayjs(record.expire_date).format('MM-DD')}
+        </>
+      ),
     },
     {
       title: '操作',
       key: 'action',
+      width: 180,
       render: (_: any, record: Test) => (
-        <Space size="middle">
+        <Space size="small">
           <Button 
             type="link" 
             icon={<EyeOutlined />} 
             onClick={() => router.push(`/dashboard/tests/${record.test_id}`)}
           >
-            查看详情
+            详情
           </Button>
-          <Button 
-            type="primary" 
-            icon={<EditOutlined />} 
-            onClick={() => showEditModal(record)}
-          >
-            编辑
-          </Button>
-          <Button 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDelete(record.test_id)}
-          >
-            删除
-          </Button>
+          <Tooltip title="编辑">
+            <Button 
+              type="primary" 
+              size="small"
+              icon={<EditOutlined />} 
+              onClick={() => showEditModal(record)}
+            />
+          </Tooltip>
+          <Tooltip title="删除">
+            <Button 
+              danger 
+              size="small"
+              icon={<DeleteOutlined />} 
+              onClick={() => handleDelete(record.test_id)}
+            />
+          </Tooltip>
         </Space>
       ),
     },
