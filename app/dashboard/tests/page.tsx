@@ -290,7 +290,7 @@ export default function TestsPage() {
         const statusColorMap: Record<string, string> = {
           created: HSBC_COLORS.secondary,
           activated: '#007799',         // 保留蓝色但调暗
-          started: '#006633',           // 保留绿色但调暗
+          open: '#006633',           // 保留绿色但调暗
           completed: HSBC_COLORS.primary, // 使用汇丰红色
           expired: '#999999',           // 灰色
         };

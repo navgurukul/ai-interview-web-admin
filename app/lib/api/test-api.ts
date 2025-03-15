@@ -13,7 +13,7 @@ export enum TestStatus {
 export const testStatusMap: Record<string, string> = {
   'created': '已创建',
   'activated': '已激活',
-  'started': '进行中',
+  'open': '进行中',
   'completed': '已完成',
   'expired': '已过期'
 };
