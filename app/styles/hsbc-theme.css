@@ -1,0 +1,75 @@
+/* 汇丰银行主题样式 */
+:root {
+  --hsbc-primary: #DB0011;
+  --hsbc-secondary: #333333;
+  --hsbc-light: #F5F5F5;
+  --hsbc-white: #FFFFFF;
+  --hsbc-border: #E5E5E5;
+}
+
+/* 主按钮样式 */
+.ant-btn-primary {
+  background-color: var(--hsbc-primary) !important;
+  border-color: var(--hsbc-primary) !important;
+}
+
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  background-color: #C5000F !important;
+  border-color: #C5000F !important;
+}
+
+/* 链接按钮样式 */
+.ant-btn-link {
+  color: var(--hsbc-primary) !important;
+}
+
+.ant-btn-link:hover {
+  color: #C5000F !important;
+}
+
+/* 表格样式 */
+.hsbc-table .ant-table-thead > tr > th {
+  background-color: #F8F8F8;
+  font-weight: 600;
+  color: var(--hsbc-secondary);
+  border-bottom: 1px solid var(--hsbc-border);
+}
+
+.hsbc-table .ant-pagination-item-active {
+  border-color: var(--hsbc-primary);
+}
+
+.hsbc-table .ant-pagination-item-active a {
+  color: var(--hsbc-primary);
+}
+
+/* 为表格添加顶部边框，保持 HSBC 风格但更加细微 */
+.hsbc-table .ant-table-container {
+  border-top: 2px solid var(--hsbc-primary);
+}
+
+/* 卡片标题样式 */
+.ant-card-head {
+  border-bottom: 2px solid var(--hsbc-primary);
+}
+
+/* 描述列表样式 */
+.ant-descriptions-item-label {
+  background-color: #F8F8F8;
+}
+
+/* 标签样式 */
+.ant-tag-blue {
+  color: #007799;
+  background: #E6F7FF;
+  border-color: #91D5FF;
+}
+
+/* 折叠面板样式 */
+.ant-collapse-header {
+  background-color: #F8F8F8;
+}
+
+.ant-collapse-item-active .ant-collapse-header {
+  border-left: 2px solid var(--hsbc-primary);
+} 
