@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Space, message, Tag, Select, DatePicker, InputNumber, Tooltip } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined, EyeOutlined } from '@ant-design/icons';
 import { 
   Test, 
   CreateTestRequest, 
@@ -21,6 +21,7 @@ import {
 } from '@/app/lib/api';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
+import { useRouter } from 'next/navigation';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -39,6 +40,8 @@ export default function TestsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [examinationPoints, setExaminationPoints] = useState<string[]>([]);
+
+  const router = useRouter();
 
   // 获取测试列表
   const fetchTests = async (page: number = 1, pageSize: number = 10) => {
@@ -351,6 +354,13 @@ export default function TestsPage() {
       key: 'action',
       render: (_: any, record: Test) => (
         <Space size="middle">
+          <Button 
+            type="link" 
+            icon={<EyeOutlined />} 
+            onClick={() => router.push(`/dashboard/tests/${record.test_id}`)}
+          >
+            查看详情
+          </Button>
           <Button 
             type="primary" 
             icon={<EditOutlined />} 

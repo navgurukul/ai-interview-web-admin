@@ -19,4 +19,4 @@ export const difficultyMap: Record<string, string> = {
   'easy': '简单',
   'medium': '中等',
   'hard': '困难'
-}; 
+};
