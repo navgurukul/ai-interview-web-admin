@@ -9,7 +9,7 @@ import { Select } from 'antd';
 const { TextArea } = Input;
 const { Option } = Select;
 
-// 技能选项
+// Technical skill options
 const technicalSkillOptions = [
   'React', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'Vue', 'Angular',
   'Node.js', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Swift',
@@ -18,9 +18,9 @@ const technicalSkillOptions = [
 ];
 
 const softSkillOptions = [
-  '团队协作', '沟通能力', '解决问题能力', '领导力', '时间管理',
-  '适应能力', '创新思维', '批判性思考', '情绪智力', '冲突解决',
-  '谈判技巧', '决策能力', '压力管理', '自我激励', '职业道德'
+  'Teamwork', 'Communication', 'Problem-solving', 'Leadership', 'Time management',
+  'Adaptability', 'Creative thinking', 'Critical thinking', 'Emotional intelligence', 'Conflict resolution',
+  'Negotiation', 'Decision-making', 'Stress management', 'Self-motivation', 'Work ethic'
 ];
 
 export default function JobsPage() {
@@ -32,7 +32,7 @@ export default function JobsPage() {
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
-  // 获取职位列表
+  // Fetch job list
   const fetchJobs = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
@@ -41,41 +41,41 @@ export default function JobsPage() {
       
       if (response.code === '0') {
         setJobs(response.data || []);
-        // 假设总数为当前页数据数量，实际项目中应从API获取总数
+        // Assuming total count is the current page data count, in real projects, total count should come from the API
         setPagination({
           ...pagination,
           current: page,
           total: (response.data?.length || 0) + skip,
         });
       } else {
-        message.error(response.message || '获取职位列表失败');
+        message.error(response.message || 'Failed to fetch job list');
       }
     } catch (error) {
-      message.error('获取职位列表失败');
+      message.error('Failed to fetch job list');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // 处理表格分页
+  // Handle table pagination
   const handleTableChange = (pagination: any) => {
     fetchJobs(pagination.current, pagination.pageSize);
   };
 
-  // 打开添加职位模态框
+  // Open add job modal
   const showAddModal = () => {
     setCurrentJob(null);
     form.resetFields();
     setModalVisible(true);
   };
 
-  // 打开编辑职位模态框
+  // Open edit job modal
   const showEditModal = (job: Job) => {
     setCurrentJob(job);
     form.setFieldsValue({
@@ -87,19 +87,19 @@ export default function JobsPage() {
     setModalVisible(true);
   };
 
-  // 关闭模态框
+  // Close modal
   const handleCancel = () => {
     setModalVisible(false);
   };
 
-  // 提交表单
+  // Submit form
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setConfirmLoading(true);
       
       if (currentJob) {
-        // 更新职位
+        // Update job
         const updateData: UpdateJobRequest = {
           job_title: values.job_title,
           job_description: values.job_description,
@@ -110,14 +110,14 @@ export default function JobsPage() {
         const response = await jobApi.updateJob(currentJob.job_id, updateData);
         
         if (response.code === '0') {
-          message.success('职位更新成功');
+          message.success('Job updated successfully');
           setModalVisible(false);
           fetchJobs(pagination.current, pagination.pageSize);
         } else {
-          message.error(response.message || '更新职位失败');
+          message.error(response.message || 'Failed to update job');
         }
       } else {
-        // 创建职位
+        // Create job
         const createData: CreateJobRequest = {
           job_title: values.job_title,
           job_description: values.job_description,
@@ -128,62 +128,62 @@ export default function JobsPage() {
         const response = await jobApi.createJob(createData);
         
         if (response.code === '0') {
-          message.success('职位创建成功');
+          message.success('Job created successfully');
           setModalVisible(false);
           fetchJobs(pagination.current, pagination.pageSize);
         } else {
-          message.error(response.message || '创建职位失败');
+          message.error(response.message || 'Failed to create job');
         }
       }
     } catch (error) {
-      console.error('提交表单错误:', error);
-      message.error('操作失败，请重试');
+      console.error('Form submission error:', error);
+      message.error('Operation failed, please try again');
     } finally {
       setConfirmLoading(false);
     }
   };
 
-  // 删除职位
+  // Delete job
   const handleDelete = (jobId: string) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这个职位吗？此操作不可撤销。',
-      okText: '确认',
-      cancelText: '取消',
+      title: 'Confirm Deletion',
+      content: 'Are you sure you want to delete this job? This action cannot be undone.',
+      okText: 'Confirm',
+      cancelText: 'Cancel',
       onOk: async () => {
         try {
           const response = await jobApi.deleteJob(jobId);
           
           if (response.code === '0') {
-            message.success('职位删除成功');
+            message.success('Job deleted successfully');
             fetchJobs(pagination.current, pagination.pageSize);
           } else {
-            message.error(response.message || '删除职位失败');
+            message.error(response.message || 'Failed to delete job');
           }
         } catch (error) {
-          message.error('删除失败，请重试');
+          message.error('Deletion failed, please try again');
           console.error(error);
         }
       },
     });
   };
 
-  // 表格列定义
+  // Table column definitions
   const columns = [
     {
-      title: '职位名称',
+      title: 'Job Title',
       dataIndex: 'job_title',
       key: 'job_title',
     },
     {
-      title: '职位描述',
+      title: 'Job Description',
       dataIndex: 'job_description',
       key: 'job_description',
       ellipsis: true,
       width: 300,
     },
     {
-      title: '技术技能',
+      title: 'Technical Skills',
       dataIndex: 'technical_skills',
       key: 'technical_skills',
       render: (skills: string[]) => (
@@ -197,7 +197,7 @@ export default function JobsPage() {
       ),
     },
     {
-      title: '软技能',
+      title: 'Soft Skills',
       dataIndex: 'soft_skills',
       key: 'soft_skills',
       render: (skills: string[]) => (
@@ -211,13 +211,13 @@ export default function JobsPage() {
       ),
     },
     {
-      title: '创建时间',
+      title: 'Creation Date',
       dataIndex: 'create_date',
       key: 'create_date',
-      render: (date: string) => new Date(date).toLocaleString('zh-CN'),
+      render: (date: string) => new Date(date).toLocaleString('en-US'),
     },
     {
-      title: '操作',
+      title: 'Actions',
       key: 'action',
       render: (_: any, record: Job) => (
         <Space size="middle">
@@ -226,14 +226,14 @@ export default function JobsPage() {
             icon={<EditOutlined />} 
             onClick={() => showEditModal(record)}
           >
-            编辑
+            Edit
           </Button>
           <Button 
             danger 
             icon={<DeleteOutlined />} 
             onClick={() => handleDelete(record.job_id)}
           >
-            删除
+            Delete
           </Button>
         </Space>
       ),
@@ -248,7 +248,7 @@ export default function JobsPage() {
           icon={<PlusOutlined />} 
           onClick={showAddModal}
         >
-          添加职位
+          Add Job
         </Button>
       </div>
       
@@ -262,13 +262,13 @@ export default function JobsPage() {
       />
 
       <Modal
-        title={currentJob ? '编辑职位' : '添加职位'}
+        title={currentJob ? 'Edit Job' : 'Add Job'}
         open={modalVisible}
         onOk={handleSubmit}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
-        okText={currentJob ? '更新' : '创建'}
-        cancelText="取消"
+        okText={currentJob ? 'Update' : 'Create'}
+        cancelText="Cancel"
         width={700}
       >
         <Form
@@ -278,31 +278,31 @@ export default function JobsPage() {
         >
           <Form.Item
             name="job_title"
-            label="职位名称"
-            rules={[{ required: true, message: '请输入职位名称' }]}
+            label="Job Title"
+            rules={[{ required: true, message: 'Please enter the job title' }]}
           >
-            <Input placeholder="请输入职位名称" />
+            <Input placeholder="Enter job title" />
           </Form.Item>
           
           <Form.Item
             name="job_description"
-            label="职位描述"
-            rules={[{ required: true, message: '请输入职位描述' }]}
+            label="Job Description"
+            rules={[{ required: true, message: 'Please enter the job description' }]}
           >
             <TextArea 
-              placeholder="请输入职位描述" 
+              placeholder="Enter job description" 
               autoSize={{ minRows: 3, maxRows: 6 }}
             />
           </Form.Item>
           
           <Form.Item
             name="technical_skills"
-            label="技术技能"
-            rules={[{ required: true, message: '请选择或输入技术技能' }]}
+            label="Technical Skills"
+            rules={[{ required: true, message: 'Please select or enter technical skills' }]}
           >
             <Select
               mode="tags"
-              placeholder="请选择或输入技术技能"
+              placeholder="Select or enter technical skills"
               style={{ width: '100%' }}
               allowClear
               options={technicalSkillOptions.map(skill => ({ label: skill, value: skill }))}
@@ -311,12 +311,12 @@ export default function JobsPage() {
           
           <Form.Item
             name="soft_skills"
-            label="软技能"
-            rules={[{ required: true, message: '请选择或输入软技能' }]}
+            label="Soft Skills"
+            rules={[{ required: true, message: 'Please select or enter soft skills' }]}
           >
             <Select
               mode="tags"
-              placeholder="请选择或输入软技能"
+              placeholder="Select or enter soft skills"
               style={{ width: '100%' }}
               allowClear
               options={softSkillOptions.map(skill => ({ label: skill, value: skill }))}

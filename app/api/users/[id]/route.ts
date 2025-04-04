@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-// 获取单个用户
+// Get a single user
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -11,13 +11,13 @@ export async function GET(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '获取用户详情失败', data: null },
+      { code: '500', message: 'Failed to fetch user details', data: null },
       { status: 500 }
     );
   }
 }
 
-// 更新用户
+// Update a user
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
@@ -33,13 +33,13 @@ export async function PUT(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '更新用户失败', data: null },
+      { code: '500', message: 'Failed to update user', data: null },
       { status: 500 }
     );
   }
 }
 
-// 删除用户
+// Delete a user
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
@@ -52,8 +52,8 @@ export async function DELETE(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '删除用户失败', data: null },
+      { code: '500', message: 'Failed to delete user', data: null },
       { status: 500 }
     );
   }
-} 
+}

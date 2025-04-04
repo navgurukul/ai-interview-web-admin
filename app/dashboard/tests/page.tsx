@@ -26,13 +26,13 @@ import { useRouter } from 'next/navigation';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-// 在组件顶部定义汇丰银行主题色
+// Define HSBC theme colors at the top of the component
 const HSBC_COLORS = {
-  primary: '#DB0011',    // 汇丰红色
-  secondary: '#333333',  // 深灰色
-  light: '#F5F5F5',      // 浅灰色背景
-  white: '#FFFFFF',      // 白色
-  border: '#E5E5E5',     // 边框色
+  primary: '#DB0011',    // HSBC red
+  secondary: '#333333',  // Dark gray
+  light: '#F5F5F5',      // Light gray background
+  white: '#FFFFFF',      // White
+  border: '#E5E5E5',     // Border color
 };
 
 export default function TestsPage() {
@@ -44,7 +44,7 @@ export default function TestsPage() {
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   
-  // 用于选择的数据
+  // Data for selection
   const [users, setUsers] = useState<User[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -52,7 +52,7 @@ export default function TestsPage() {
 
   const router = useRouter();
 
-  // 获取测试列表
+  // Fetch test list
   const fetchTests = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
@@ -61,24 +61,24 @@ export default function TestsPage() {
       
       if (response.code === '0') {
         setTests(response.data || []);
-        // 假设总数为当前页数据数量，实际项目中应从API获取总数
+        // Assume total count is the current page data count; in real projects, total count should come from the API
         setPagination({
           ...pagination,
           current: page,
           total: (response.data?.length || 0) + skip,
         });
       } else {
-        message.error(response.message || '获取测试列表失败');
+        message.error(response.message || 'Failed to fetch test list');
       }
     } catch (error) {
-      message.error('获取测试列表失败');
+      message.error('Failed to fetch test list');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 获取用户列表
+  // Fetch user list
   const fetchUsers = async () => {
     try {
       const response = await userApi.getUsers(0, 100);
@@ -86,11 +86,11 @@ export default function TestsPage() {
         setUsers(response.data);
       }
     } catch (error) {
-      console.error('获取用户列表失败:', error);
+      console.error('Failed to fetch user list:', error);
     }
   };
 
-  // 获取职位列表
+  // Fetch job list
   const fetchJobs = async () => {
     try {
       const response = await jobApi.getJobs(0, 100);
@@ -98,18 +98,18 @@ export default function TestsPage() {
         setJobs(response.data);
       }
     } catch (error) {
-      console.error('获取职位列表失败:', error);
+      console.error('Failed to fetch job list:', error);
     }
   };
 
-  // 获取问题列表
+  // Fetch question list
   const fetchQuestions = async () => {
     try {
       const response = await questionApi.getQuestions(0, 100);
       if (response.code === '0' && response.data) {
         setQuestions(response.data);
         
-        // 提取所有考察点
+        // Extract all examination points
         const points = new Set<string>();
         response.data.forEach(question => {
           question.examination_points.forEach(point => {
@@ -119,11 +119,11 @@ export default function TestsPage() {
         setExaminationPoints(Array.from(points));
       }
     } catch (error) {
-      console.error('获取问题列表失败:', error);
+      console.error('Failed to fetch question list:', error);
     }
   };
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     fetchTests();
     fetchUsers();
@@ -131,19 +131,19 @@ export default function TestsPage() {
     fetchQuestions();
   }, []);
 
-  // 处理表格分页
+  // Handle table pagination
   const handleTableChange = (pagination: any) => {
     fetchTests(pagination.current, pagination.pageSize);
   };
 
-  // 打开添加测试模态框
+  // Open add test modal
   const showAddModal = () => {
     setCurrentTest(null);
     form.resetFields();
     setModalVisible(true);
   };
 
-  // 打开编辑测试模态框
+  // Open edit test modal
   const showEditModal = (test: Test) => {
     setCurrentTest(test);
     form.setFieldsValue({
@@ -164,21 +164,21 @@ export default function TestsPage() {
     setModalVisible(true);
   };
 
-  // 关闭模态框
+  // Close modal
   const handleCancel = () => {
     setModalVisible(false);
   };
 
-  // 复制激活码
+  // Copy activation code
   const copyActivateCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
-      message.success('激活码已复制到剪贴板');
+      message.success('Activation code copied to clipboard');
     }).catch(() => {
-      message.error('复制失败，请手动复制');
+      message.error('Copy failed, please copy manually');
     });
   };
 
-  // 提交表单
+  // Submit form
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -201,76 +201,76 @@ export default function TestsPage() {
       
       let response;
       if (currentTest) {
-        // 更新测试
+        // Update test
         response = await testApi.updateTest(currentTest.test_id, testData);
       } else {
-        // 创建测试
+        // Create test
         response = await testApi.createTest(testData);
       }
       
       if (response.code === '0') {
-        message.success(currentTest ? '测试更新成功' : '测试创建成功');
+        message.success(currentTest ? 'Test updated successfully' : 'Test created successfully');
         setModalVisible(false);
         fetchTests(pagination.current, pagination.pageSize);
       } else {
-        message.error(response.message || (currentTest ? '更新测试失败' : '创建测试失败'));
+        message.error(response.message || (currentTest ? 'Failed to update test' : 'Failed to create test'));
       }
     } catch (error) {
-      console.error('表单验证失败:', error);
+      console.error('Form validation failed:', error);
     } finally {
       setConfirmLoading(false);
     }
   };
 
-  // 删除测试
+  // Delete test
   const handleDelete = async (testId: string) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这个测试吗？此操作不可恢复。',
-      okText: '确认',
+      title: 'Confirm deletion',
+      content: 'Are you sure you want to delete this test? This action cannot be undone.',
+      okText: 'Confirm',
       okType: 'danger',
-      cancelText: '取消',
+      cancelText: 'Cancel',
       onOk: async () => {
         try {
           const response = await testApi.deleteTest(testId);
           if (response.code === '0') {
-            message.success('删除测试成功');
+            message.success('Test deleted successfully');
             fetchTests(pagination.current, pagination.pageSize);
           } else {
-            message.error(response.message || '删除测试失败');
+            message.error(response.message || 'Failed to delete test');
           }
         } catch (error) {
-          message.error('删除测试失败');
+          message.error('Failed to delete test');
           console.error(error);
         }
       }
     });
   };
 
-  // 根据职位ID获取职位名称
+  // Get job title by job ID
   const getJobTitleById = (jobId?: string) => {
-    if (!jobId) return '未关联职位';
+    if (!jobId) return 'No associated job';
     const job = jobs.find(j => j.job_id === jobId);
-    return job ? job.job_title : '未知职位';
+    return job ? job.job_title : 'Unknown job';
   };
 
-  // 根据用户ID获取用户名称
+  // Get user name by user ID
   const getUserNameById = (userId?: string) => {
-    if (!userId) return '未关联用户';
+    if (!userId) return 'No associated user';
     const user = users.find(u => u.user_id === userId);
-    return user ? user.user_name : '未知用户';
+    return user ? user.user_name : 'Unknown user';
   };
 
-  // 表格列定义 - 简化版
+  // Table column definitions - simplified version
   const columns = [
     {
-      title: '激活码',
+      title: 'Activation Code',
       dataIndex: 'activate_code',
       key: 'activate_code',
       render: (text: string) => (
         <Space>
           {text}
-          <Tooltip title="复制激活码">
+          <Tooltip title="Copy activation code">
             <Button 
               icon={<CopyOutlined />} 
               size="small" 
@@ -282,17 +282,17 @@ export default function TestsPage() {
       ),
     },
     {
-      title: '状态',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
-        // 使用汇丰主题色修改状态标签
+        // Use HSBC theme colors to modify status tags
         const statusColorMap: Record<string, string> = {
           created: HSBC_COLORS.secondary,
-          activated: '#007799',         // 保留蓝色但调暗
-          open: '#006633',           // 保留绿色但调暗
-          completed: HSBC_COLORS.primary, // 使用汇丰红色
-          expired: '#999999',           // 灰色
+          activated: '#007799',         // Keep blue but darken
+          open: '#006633',           // Keep green but darken
+          completed: HSBC_COLORS.primary, // Use HSBC red
+          expired: '#999999',           // Gray
         };
 
         return (
@@ -303,36 +303,36 @@ export default function TestsPage() {
       },
     },
     {
-      title: '职位',
+      title: 'Job',
       dataIndex: 'job_title',
       key: 'job_title',
       render: (text: string, record: Test) => record.job_title || getJobTitleById(record.job_id),
       ellipsis: true,
     },
     {
-      title: '用户',
+      title: 'User',
       dataIndex: 'user_name',
       key: 'user_name',
       render: (text: string, record: Test) => record.user_name || getUserNameById(record.user_id),
       ellipsis: true,
     },
     {
-      title: '测试类型',
+      title: 'Test Type',
       dataIndex: 'type',
       key: 'type',
       render: (type: string) => testTypeMap[type] || type,
     },
     {
-      title: '有效期限',
+      title: 'Validity Period',
       key: 'dateRange',
       render: (text: string, record: Test) => (
         <>
-          {dayjs(record.start_date).format('MM-DD')} 至 {dayjs(record.expire_date).format('MM-DD')}
+          {dayjs(record.start_date).format('MM-DD')} to {dayjs(record.expire_date).format('MM-DD')}
         </>
       ),
     },
     {
-      title: '操作',
+      title: 'Actions',
       key: 'action',
       width: 180,
       render: (_: any, record: Test) => (
@@ -343,9 +343,9 @@ export default function TestsPage() {
             onClick={() => router.push(`/dashboard/tests/${record.test_id}`)}
             style={{ color: HSBC_COLORS.primary }}
           >
-            详情
+            Details
           </Button>
-          <Tooltip title="编辑">
+          <Tooltip title="Edit">
             <Button 
               type="primary" 
               size="small"
@@ -357,7 +357,7 @@ export default function TestsPage() {
               }}
             />
           </Tooltip>
-          <Tooltip title="删除">
+          <Tooltip title="Delete">
             <Button 
               danger 
               size="small"
@@ -370,11 +370,11 @@ export default function TestsPage() {
     },
   ];
 
-  // 当选择职位时，自动填充考察点
+  // Automatically populate examination points when a job is selected
   const handleJobChange = (jobId: string) => {
     const selectedJob = jobs.find(job => job.job_id === jobId);
     if (selectedJob) {
-      // 获取该职位相关的所有技能作为考察点
+      // Get all skills related to the job as examination points
       const jobPoints = [...selectedJob.technical_skills, ...selectedJob.soft_skills];
       form.setFieldsValue({ examination_points: jobPoints });
     }
@@ -392,7 +392,7 @@ export default function TestsPage() {
             borderColor: HSBC_COLORS.primary
           }}
         >
-          添加测试
+          Add Test
         </Button>
       </div>
       
@@ -412,13 +412,13 @@ export default function TestsPage() {
       />
 
       <Modal
-        title={currentTest ? '编辑测试' : '添加测试'}
+        title={currentTest ? 'Edit Test' : 'Add Test'}
         open={modalVisible}
         onOk={handleSubmit}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
-        okText={currentTest ? '更新' : '创建'}
-        cancelText="取消"
+        okText={currentTest ? 'Update' : 'Create'}
+        cancelText="Cancel"
         width={800}
       >
         <Form
@@ -428,11 +428,11 @@ export default function TestsPage() {
         >
           <Form.Item
             name="job_id"
-            label="选择职位"
-            rules={[{ required: true, message: '请选择职位' }]}
+            label="Select Job"
+            rules={[{ required: true, message: 'Please select a job' }]}
           >
             <Select 
-              placeholder="请选择职位" 
+              placeholder="Select a job" 
               showSearch
               filterOption={(input, option) =>
                 (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
@@ -447,11 +447,11 @@ export default function TestsPage() {
           
           <Form.Item
             name="user_id"
-            label="选择用户"
-            rules={[{ required: true, message: '请选择用户' }]}
+            label="Select User"
+            rules={[{ required: true, message: 'Please select a user' }]}
           >
             <Select 
-              placeholder="请选择用户" 
+              placeholder="Select a user" 
               showSearch
               filterOption={(input, option) =>
                 (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
@@ -465,11 +465,11 @@ export default function TestsPage() {
           
           <Form.Item
             name="question_ids"
-            label="选择题目"
+            label="Select Questions"
           >
             <Select
               mode="multiple"
-              placeholder="请选择题目（可选）"
+              placeholder="Select questions (optional)"
               style={{ width: '100%' }}
               allowClear
               optionFilterProp="children"
@@ -487,12 +487,12 @@ export default function TestsPage() {
           
           <Form.Item
             name="examination_points"
-            label="考察要点"
-            rules={[{ required: true, message: '请选择或输入考察要点' }]}
+            label="Examination Points"
+            rules={[{ required: true, message: 'Please select or enter examination points' }]}
           >
             <Select
               mode="tags"
-              placeholder="请选择或输入考察要点"
+              placeholder="Select or enter examination points"
               style={{ width: '100%' }}
               allowClear
             >
@@ -504,16 +504,16 @@ export default function TestsPage() {
           
           <Form.Item
             name="test_time"
-            label="测试时间（分钟）"
-            rules={[{ required: true, message: '请输入测试时间' }]}
+            label="Test Time (minutes)"
+            rules={[{ required: true, message: 'Please enter test time' }]}
           >
             <InputNumber min={1} max={180} style={{ width: '100%' }} />
           </Form.Item>
           
           <Form.Item
             name="date_range"
-            label="测试有效期"
-            rules={[{ required: true, message: '请选择测试有效期' }]}
+            label="Test Validity Period"
+            rules={[{ required: true, message: 'Please select test validity period' }]}
           >
             <RangePicker 
               showTime 
@@ -524,39 +524,39 @@ export default function TestsPage() {
           
           <Form.Item
             name="type"
-            label="测试类型"
-            rules={[{ required: true, message: '请选择测试类型' }]}
+            label="Test Type"
+            rules={[{ required: true, message: 'Please select test type' }]}
           >
-            <Select placeholder="请选择测试类型">
-              <Option value="interview">面试测试</Option>
-              <Option value="coding">编程测试</Option>
-              <Option value="behavior">行为测试</Option>
+            <Select placeholder="Select test type">
+              <Option value="interview">Interview Test</Option>
+              <Option value="coding">Coding Test</Option>
+              <Option value="behavior">Behavior Test</Option>
             </Select>
           </Form.Item>
           
           <div style={{ display: 'flex', gap: '16px' }}>
             <Form.Item
               name="language"
-              label="语言"
-              rules={[{ required: true, message: '请选择语言' }]}
+              label="Language"
+              rules={[{ required: true, message: 'Please select a language' }]}
               style={{ flex: 1 }}
             >
-              <Select placeholder="请选择语言">
-                <Option value="Chinese">中文</Option>
-                <Option value="English">英文</Option>
+              <Select placeholder="Select language">
+                <Option value="Chinese">Chinese</Option>
+                <Option value="English">English</Option>
               </Select>
             </Form.Item>
             
             <Form.Item
               name="difficulty"
-              label="难度"
-              rules={[{ required: true, message: '请选择难度' }]}
+              label="Difficulty"
+              rules={[{ required: true, message: 'Please select difficulty' }]}
               style={{ flex: 1 }}
             >
-              <Select placeholder="请选择难度">
-                <Option value="easy">简单</Option>
-                <Option value="medium">中等</Option>
-                <Option value="hard">困难</Option>
+              <Select placeholder="Select difficulty">
+                <Option value="easy">Easy</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="hard">Hard</Option>
               </Select>
             </Form.Item>
           </div>

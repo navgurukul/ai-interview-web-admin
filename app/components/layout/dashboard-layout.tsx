@@ -8,32 +8,32 @@ import { usePathname } from 'next/navigation';
 
 const { Header, Content, Sider } = Layout;
 
-// 定义侧边栏菜单项
+// Define sidebar menu items
 const menuItems = [
   {
     key: 'users',
     icon: <UserOutlined />,
-    label: <Link href="/dashboard/users">用户管理</Link>,
+    label: <Link href="/dashboard/users">User Management</Link>,
   },
   {
     key: 'jobs',
     icon: <ProfileOutlined />,
-    label: <Link href="/dashboard/jobs">职位管理</Link>,
+    label: <Link href="/dashboard/jobs">Job Management</Link>,
   },
   {
     key: 'questions',
     icon: <QuestionCircleOutlined />,
-    label: <Link href="/dashboard/questions">题目管理</Link>,
+    label: <Link href="/dashboard/questions">Question Management</Link>,
   },
   {
     key: 'tests',
     icon: <FileTextOutlined />,
-    label: <Link href="/dashboard/tests">测试管理</Link>,
+    label: <Link href="/dashboard/tests">Test Management</Link>,
   },
   {
     key: 'settings',
     icon: <SettingOutlined />,
-    label: <Link href="/dashboard/settings">系统设置</Link>,
+    label: <Link href="/dashboard/settings">System Settings</Link>,
   },
 ];
 
@@ -45,10 +45,10 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   
-  // 获取当前选中的菜单项
+  // Get the currently selected menu item
   const selectedKey = pathname.split('/')[2] || 'users';
 
-  // 使用Ant Design的主题
+  // Use Ant Design's theme
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -57,7 +57,7 @@ export default function DashboardLayout({
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ padding: 0, background: colorBgContainer }}>
         <div style={{ paddingLeft: 24, fontSize: 20, fontWeight: 'bold' }}>
-          AI Interview 管理系统
+          AI Interview Management System
         </div>
       </Header>
       <Layout>

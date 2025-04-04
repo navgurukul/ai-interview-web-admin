@@ -1,6 +1,6 @@
 import { ApiResponse, API_BASE_URL } from './api-types';
 
-// 职位类型定义
+// Job type definition
 export interface Job {
   job_id: string;
   job_title: string;
@@ -10,7 +10,7 @@ export interface Job {
   create_date: string;
 }
 
-// 创建职位请求类型
+// Create job request type
 export interface CreateJobRequest {
   job_title: string;
   job_description: string;
@@ -18,7 +18,7 @@ export interface CreateJobRequest {
   soft_skills: string[];
 }
 
-// 更新职位请求类型
+// Update job request type
 export interface UpdateJobRequest {
   job_title?: string;
   job_description?: string;
@@ -26,31 +26,31 @@ export interface UpdateJobRequest {
   soft_skills?: string[];
 }
 
-// 职位API
+// Job API
 export const jobApi = {
-  // 获取职位列表
+  // Get job list
   async getJobs(skip: number = 0, limit: number = 10): Promise<ApiResponse<Job[]>> {
     try {
       const response = await fetch(`${API_BASE_URL}/job?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
-      console.error('获取职位列表失败:', error);
-      return { code: '500', message: '获取职位列表失败', data: null };
+      console.error('Failed to fetch job list:', error);
+      return { code: '500', message: 'Failed to fetch job list', data: null };
     }
   },
 
-  // 获取单个职位
+  // Get a single job
   async getJobById(jobId: string): Promise<ApiResponse<Job>> {
     try {
       const response = await fetch(`${API_BASE_URL}/job/${jobId}`);
       return await response.json();
     } catch (error) {
-      console.error('获取职位详情失败:', error);
-      return { code: '500', message: '获取职位详情失败', data: null };
+      console.error('Failed to fetch job details:', error);
+      return { code: '500', message: 'Failed to fetch job details', data: null };
     }
   },
 
-  // 创建职位
+  // Create a job
   async createJob(jobData: CreateJobRequest): Promise<ApiResponse<Job>> {
     try {
       const response = await fetch(`${API_BASE_URL}/job`, {
@@ -60,12 +60,12 @@ export const jobApi = {
       });
       return await response.json();
     } catch (error) {
-      console.error('创建职位失败:', error);
-      return { code: '500', message: '创建职位失败', data: null };
+      console.error('Failed to create job:', error);
+      return { code: '500', message: 'Failed to create job', data: null };
     }
   },
 
-  // 更新职位
+  // Update a job
   async updateJob(jobId: string, jobData: UpdateJobRequest): Promise<ApiResponse<Job>> {
     try {
       const response = await fetch(`${API_BASE_URL}/job/${jobId}`, {
@@ -75,12 +75,12 @@ export const jobApi = {
       });
       return await response.json();
     } catch (error) {
-      console.error('更新职位失败:', error);
-      return { code: '500', message: '更新职位失败', data: null };
+      console.error('Failed to update job:', error);
+      return { code: '500', message: 'Failed to update job', data: null };
     }
   },
 
-  // 删除职位
+  // Delete a job
   async deleteJob(jobId: string): Promise<ApiResponse<{ deleted: boolean }>> {
     try {
       const response = await fetch(`${API_BASE_URL}/job/${jobId}`, {
@@ -88,8 +88,8 @@ export const jobApi = {
       });
       return await response.json();
     } catch (error) {
-      console.error('删除职位失败:', error);
-      return { code: '500', message: '删除职位失败', data: null };
+      console.error('Failed to delete job:', error);
+      return { code: '500', message: 'Failed to delete job', data: null };
     }
   },
-}; 
+};

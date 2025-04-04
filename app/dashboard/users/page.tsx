@@ -14,7 +14,7 @@ export default function UsersPage() {
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
-  // 获取用户列表
+  // Fetch user list
   const fetchUsers = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
@@ -23,41 +23,41 @@ export default function UsersPage() {
       
       if (response.code === '0') {
         setUsers(response.data || []);
-        // 假设总数为当前页数据数量，实际项目中应从API获取总数
+        // Assume total count is the current page data count; in real projects, total count should come from the API
         setPagination({
           ...pagination,
           current: page,
           total: (response.data?.length || 0) + skip,
         });
       } else {
-        message.error(response.message || '获取用户列表失败');
+        message.error(response.message || 'Failed to fetch user list');
       }
     } catch (error) {
-      message.error('获取用户列表失败');
+      message.error('Failed to fetch user list');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // 处理表格分页
+  // Handle table pagination
   const handleTableChange = (pagination: any) => {
     fetchUsers(pagination.current, pagination.pageSize);
   };
 
-  // 打开添加用户模态框
+  // Open add user modal
   const showAddModal = () => {
     setCurrentUser(null);
     form.resetFields();
     setModalVisible(true);
   };
 
-  // 打开编辑用户模态框
+  // Open edit user modal
   const showEditModal = (user: User) => {
     setCurrentUser(user);
     form.setFieldsValue({
@@ -70,19 +70,19 @@ export default function UsersPage() {
     setModalVisible(true);
   };
 
-  // 关闭模态框
+  // Close modal
   const handleCancel = () => {
     setModalVisible(false);
   };
 
-  // 提交表单
+  // Submit form
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setConfirmLoading(true);
       
       if (currentUser) {
-        // 更新用户
+        // Update user
         const updateData: UpdateUserRequest = {
           user_name: values.user_name,
           email: values.email,
@@ -94,14 +94,14 @@ export default function UsersPage() {
         const response = await userApi.updateUser(currentUser.user_id, updateData);
         
         if (response.code === '0') {
-          message.success('用户更新成功');
+          message.success('User updated successfully');
           setModalVisible(false);
           fetchUsers(pagination.current, pagination.pageSize);
         } else {
-          message.error(response.message || '更新用户失败');
+          message.error(response.message || 'Failed to update user');
         }
       } else {
-        // 创建用户
+        // Create user
         const createData: CreateUserRequest = {
           user_name: values.user_name,
           password: values.password,
@@ -113,83 +113,83 @@ export default function UsersPage() {
         const response = await userApi.createUser(createData);
         
         if (response.code === '0') {
-          message.success('用户创建成功');
+          message.success('User created successfully');
           setModalVisible(false);
           fetchUsers(pagination.current, pagination.pageSize);
         } else {
-          message.error(response.message || '创建用户失败');
+          message.error(response.message || 'Failed to create user');
         }
       }
     } catch (error) {
-      console.error('提交表单错误:', error);
-      message.error('操作失败，请重试');
+      console.error('Form submission error:', error);
+      message.error('Operation failed, please try again');
     } finally {
       setConfirmLoading(false);
     }
   };
 
-  // 删除用户
+  // Delete user
   const handleDelete = (userId: string) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这个用户吗？此操作不可撤销。',
-      okText: '确认',
-      cancelText: '取消',
+      title: 'Confirm Deletion',
+      content: 'Are you sure you want to delete this user? This action cannot be undone.',
+      okText: 'Confirm',
+      cancelText: 'Cancel',
       onOk: async () => {
         try {
           const response = await userApi.deleteUser(userId);
           
           if (response.code === '0') {
-            message.success('用户删除成功');
+            message.success('User deleted successfully');
             fetchUsers(pagination.current, pagination.pageSize);
           } else {
-            message.error(response.message || '删除用户失败');
+            message.error(response.message || 'Failed to delete user');
           }
         } catch (error) {
-          message.error('删除失败，请重试');
+          message.error('Deletion failed, please try again');
           console.error(error);
         }
       },
     });
   };
 
-  // 表格列定义
+  // Table column definitions
   const columns = [
     {
-      title: '用户名',
+      title: 'Username',
       dataIndex: 'user_name',
       key: 'user_name',
     },
     {
-      title: '员工ID',
+      title: 'Staff ID',
       dataIndex: 'staff_id',
       key: 'staff_id',
     },
     {
-      title: '邮箱',
+      title: 'Email',
       dataIndex: 'email',
       key: 'email',
     },
     {
-      title: '角色',
+      title: 'Role',
       dataIndex: 'role',
       key: 'role',
-      render: (role: number) => roleMap[role] || `角色${role}`,
+      render: (role: number) => roleMap[role] || `Role ${role}`,
     },
     {
-      title: '状态',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: number) => statusMap[status] || `状态${status}`,
+      render: (status: number) => statusMap[status] || `Status ${status}`,
     },
     {
-      title: '创建时间',
+      title: 'Creation Date',
       dataIndex: 'create_date',
       key: 'create_date',
-      render: (date: string) => new Date(date).toLocaleString('zh-CN'),
+      render: (date: string) => new Date(date).toLocaleString('en-US'),
     },
     {
-      title: '操作',
+      title: 'Actions',
       key: 'action',
       render: (_: any, record: User) => (
         <Space size="middle">
@@ -198,14 +198,14 @@ export default function UsersPage() {
             icon={<EditOutlined />} 
             onClick={() => showEditModal(record)}
           >
-            编辑
+            Edit
           </Button>
           <Button 
             danger 
             icon={<DeleteOutlined />} 
             onClick={() => handleDelete(record.user_id)}
           >
-            删除
+            Delete
           </Button>
         </Space>
       ),
@@ -220,7 +220,7 @@ export default function UsersPage() {
           icon={<PlusOutlined />} 
           onClick={showAddModal}
         >
-          添加用户
+          Add User
         </Button>
       </div>
       
@@ -234,13 +234,13 @@ export default function UsersPage() {
       />
 
       <Modal
-        title={currentUser ? '编辑用户' : '添加用户'}
+        title={currentUser ? 'Edit User' : 'Add User'}
         open={modalVisible}
         onOk={handleSubmit}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
-        okText={currentUser ? '更新' : '创建'}
-        cancelText="取消"
+        okText={currentUser ? 'Update' : 'Create'}
+        cancelText="Cancel"
       >
         <Form
           form={form}
@@ -253,62 +253,62 @@ export default function UsersPage() {
         >
           <Form.Item
             name="user_name"
-            label="用户名"
-            rules={[{ required: true, message: '请输入用户名' }]}
+            label="Username"
+            rules={[{ required: true, message: 'Please enter a username' }]}
           >
-            <Input placeholder="请输入用户名" />
+            <Input placeholder="Enter username" />
           </Form.Item>
           
           {!currentUser && (
             <Form.Item
               name="password"
-              label="密码"
-              rules={[{ required: true, message: '请输入密码' }]}
+              label="Password"
+              rules={[{ required: true, message: 'Please enter a password' }]}
             >
-              <Input.Password placeholder="请输入密码" />
+              <Input.Password placeholder="Enter password" />
             </Form.Item>
           )}
           
           <Form.Item
             name="email"
-            label="邮箱"
+            label="Email"
             rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' }
+              { required: true, message: 'Please enter an email' },
+              { type: 'email', message: 'Please enter a valid email address' }
             ]}
           >
-            <Input placeholder="请输入邮箱" />
+            <Input placeholder="Enter email" />
           </Form.Item>
           
           <Form.Item
             name="staff_id"
-            label="员工ID"
-            rules={[{ required: true, message: '请输入员工ID' }]}
+            label="Staff ID"
+            rules={[{ required: true, message: 'Please enter a staff ID' }]}
           >
-            <Input placeholder="请输入员工ID" />
+            <Input placeholder="Enter staff ID" />
           </Form.Item>
           
           <Form.Item
             name="role"
-            label="角色"
-            rules={[{ required: true, message: '请选择角色' }]}
+            label="Role"
+            rules={[{ required: true, message: 'Please select a role' }]}
           >
             <Select>
-              <Select.Option value={1}>管理员</Select.Option>
-              <Select.Option value={2}>普通用户</Select.Option>
-              <Select.Option value={0}>访客</Select.Option>
+              <Select.Option value={1}>Admin</Select.Option>
+              <Select.Option value={2}>Regular User</Select.Option>
+              <Select.Option value={0}>Guest</Select.Option>
             </Select>
           </Form.Item>
           
           {currentUser && (
             <Form.Item
               name="status"
-              label="状态"
-              rules={[{ required: true, message: '请选择状态' }]}
+              label="Status"
+              rules={[{ required: true, message: 'Please select a status' }]}
             >
               <Select>
-                <Select.Option value={0}>激活</Select.Option>
-                <Select.Option value={1}>未激活</Select.Option>
+                <Select.Option value={0}>Active</Select.Option>
+                <Select.Option value={1}>Inactive</Select.Option>
               </Select>
             </Form.Item>
           )}

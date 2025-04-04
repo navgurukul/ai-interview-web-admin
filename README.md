@@ -1,135 +1,135 @@
-# AI Interview 后台管理系统
+# AI Interview Admin Management System
 
-这是一个使用 NextJS 15、React 19 和 Ant Design 构建的 AI Interview 后台管理系统。
+This is an AI Interview Admin Management System built using NextJS 15, React 19, and Ant Design.
 
-## 功能特点
+## Features
 
-- **用户管理**：支持用户的增删改查
-- **职位管理**：支持职位的增删改查
-- **题目管理**：支持题目的增删改查
-- **系统设置**：可自定义系统名称、Logo、主题和语言
+- **User Management**: Supports CRUD operations for users
+- **Job Management**: Supports CRUD operations for jobs
+- **Question Management**: Supports CRUD operations for questions
+- **System Settings**: Allows customization of system name, logo, theme, and language
 
-## 技术栈
+## Tech Stack
 
 - NextJS 15 (App Router)
 - React 19
 - Ant Design
 - TypeScript
 
-## 如何运行
+## How to Run
 
-1. 安装依赖：
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-2. 创建环境变量文件 `.env.local`：
+2. Create an environment variable file `.env.local`:
    ```
    NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
    ```
 
-3. 启动开发服务器：
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-4. 构建生产版本：
+4. Build the production version:
    ```bash
    npm run build
    ```
 
-5. 启动生产服务器：
+5. Start the production server:
    ```bash
    npm start
    ```
 
-## 系统说明
+## System Overview
 
-### 用户管理
+### User Management
 
-用户管理页面提供以下功能：
-- 查看用户列表
-- 添加新用户
-- 编辑用户信息
-- 删除用户
+The User Management page provides the following features:
+- View user list
+- Add new users
+- Edit user information
+- Delete users
 
-用户具有以下属性：
-- 用户名 (user_name)
-- 员工ID (staff_id)
-- 邮箱 (email)
-- 角色 (role)：管理员(1)、普通用户(2)、访客(0)
-- 状态 (status)：激活(0)、未激活(1)
+User attributes include:
+- Username (user_name)
+- Staff ID (staff_id)
+- Email (email)
+- Role (role): Admin (1), Regular User (2), Guest (0)
+- Status (status): Active (0), Inactive (1)
 
-### 职位管理
+### Job Management
 
-职位管理页面提供以下功能：
-- 查看职位列表
-- 添加新职位
-- 编辑职位信息
-- 删除职位
+The Job Management page provides the following features:
+- View job list
+- Add new jobs
+- Edit job information
+- Delete jobs
 
-职位具有以下属性：
-- 职位名称 (job_title)
-- 职位描述 (job_description)
-- 技术技能 (technical_skills)
-- 软技能 (soft_skills)
-- 创建时间 (create_date)
+Job attributes include:
+- Job Title (job_title)
+- Job Description (job_description)
+- Technical Skills (technical_skills)
+- Soft Skills (soft_skills)
+- Creation Date (create_date)
 
-### 题目管理
+### Question Management
 
-题目管理页面提供以下功能：
-- 查看题目列表
-- 添加新题目
-- 编辑题目信息
-- 删除题目
+The Question Management page provides the following features:
+- View question list
+- Add new questions
+- Edit question information
+- Delete questions
 
-题目具有以下属性：
-- 题目内容 (question)
-- 参考答案 (answer)
-- 考察点 (examination_points)
-- 适用职位 (job_title)
-- 语言 (language)：中文、英文
-- 难度 (difficulty)：简单、中等、困难
-- 题目类型 (type)：简答题、选择题、编程题
+Question attributes include:
+- Question Content (question)
+- Reference Answer (answer)
+- Examination Points (examination_points)
+- Applicable Job (job_title)
+- Language (language): Chinese, English
+- Difficulty (difficulty): Easy, Medium, Hard
+- Question Type (type): Short Answer, Multiple Choice, Coding
 
-### 系统设置
+### System Settings
 
-系统设置页面允许管理员：
-- 修改系统名称
-- 设置系统Logo
-- 选择界面主题（浅色、深色）
-- 选择系统语言（中文、英文）
+The System Settings page allows administrators to:
+- Modify the system name
+- Set the system logo
+- Choose the interface theme (light, dark)
+- Select the system language (Chinese, English)
 
-## API 集成
+## API Integration
 
-系统已集成后端 API，支持以下操作：
+The system integrates with backend APIs to support the following operations:
 
-### 用户API
-- 获取用户列表 (GET /api/v1/user)
-- 获取单个用户 (GET /api/v1/user/:id)
-- 创建用户 (POST /api/v1/user)
-- 更新用户 (PUT /api/v1/user/:id)
-- 删除用户 (DELETE /api/v1/user/:id)
+### User API
+- Get user list (GET /api/v1/user)
+- Get a single user (GET /api/v1/user/:id)
+- Create a user (POST /api/v1/user)
+- Update a user (PUT /api/v1/user/:id)
+- Delete a user (DELETE /api/v1/user/:id)
 
-### 职位API
-- 获取职位列表 (GET /api/v1/job)
-- 获取单个职位 (GET /api/v1/job/:id)
-- 创建职位 (POST /api/v1/job)
-- 更新职位 (PUT /api/v1/job/:id)
-- 删除职位 (DELETE /api/v1/job/:id)
+### Job API
+- Get job list (GET /api/v1/job)
+- Get a single job (GET /api/v1/job/:id)
+- Create a job (POST /api/v1/job)
+- Update a job (PUT /api/v1/job/:id)
+- Delete a job (DELETE /api/v1/job/:id)
 
-### 题目API
-- 获取题目列表 (GET /api/v1/question)
-- 获取单个题目 (GET /api/v1/question/:id)
-- 创建题目 (POST /api/v1/question)
-- 更新题目 (PUT /api/v1/question/:id)
-- 删除题目 (DELETE /api/v1/question/:id)
+### Question API
+- Get question list (GET /api/v1/question)
+- Get a single question (GET /api/v1/question/:id)
+- Create a question (POST /api/v1/question)
+- Update a question (PUT /api/v1/question/:id)
+- Delete a question (DELETE /api/v1/question/:id)
 
-API 响应格式为：
+API response format:
 ```json
 {
-  "code": "0",     // 0表示成功，其他表示错误码
+  "code": "0",     // 0 indicates success, other values indicate error codes
   "message": "success",
-  "data": {}       // 响应数据
+  "data": {}       // Response data
 }
 ``` 

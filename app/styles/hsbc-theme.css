@@ -1,4 +1,4 @@
-/* 汇丰银行主题样式 */
+/* HSBC Theme Styles */
 :root {
   --hsbc-primary: #DB0011;
   --hsbc-secondary: #333333;
@@ -7,7 +7,7 @@
   --hsbc-border: #E5E5E5;
 }
 
-/* 主按钮样式 */
+/* Primary Button Styles */
 .ant-btn-primary {
   background-color: var(--hsbc-primary) !important;
   border-color: var(--hsbc-primary) !important;
@@ -18,7 +18,7 @@
   border-color: #C5000F !important;
 }
 
-/* 链接按钮样式 */
+/* Link Button Styles */
 .ant-btn-link {
   color: var(--hsbc-primary) !important;
 }
@@ -27,7 +27,7 @@
   color: #C5000F !important;
 }
 
-/* 表格样式 */
+/* Table Styles */
 .hsbc-table .ant-table-thead > tr > th {
   background-color: #F8F8F8;
   font-weight: 600;
@@ -43,24 +43,24 @@
   color: var(--hsbc-primary);
 }
 
-/* 卡片标题样式 */
+/* Card Header Styles */
 .ant-card-head {
   border-bottom: 2px solid var(--hsbc-primary);
 }
 
-/* 描述列表样式 */
+/* Descriptions List Styles */
 .ant-descriptions-item-label {
   background-color: #F8F8F8;
 }
 
-/* 标签样式 */
+/* Tag Styles */
 .ant-tag-blue {
   color: #007799;
   background: #E6F7FF;
   border-color: #91D5FF;
 }
 
-/* 折叠面板样式 */
+/* Collapse Panel Styles */
 .ant-collapse-header {
   background-color: #F8F8F8;
 }
@@ -69,7 +69,7 @@
   border-left: 2px solid var(--hsbc-primary);
 }
 
-/* Markdown内容样式 */
+/* Markdown Content Styles */
 .markdown-content {
   background-color: var(--hsbc-light);
   padding: 16px;

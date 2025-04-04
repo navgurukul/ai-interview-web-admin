@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-// 代理到后端API
+// Proxy to the backend API
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const skip = searchParams.get('skip') || '0';
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '获取用户列表失败', data: null },
+      { code: '500', message: 'Failed to fetch user list', data: null },
       { status: 500 }
     );
   }
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '创建用户失败', data: null },
+      { code: '500', message: 'Failed to create user', data: null },
       { status: 500 }
     );
   }

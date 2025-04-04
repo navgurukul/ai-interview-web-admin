@@ -17,13 +17,13 @@ import {
 const { TextArea } = Input;
 const { Option } = Select;
 
-// 考察点选项
+// Examination point options
 const examinationPointOptions = [
-  'React', '虚拟DOM', '性能优化', 'JavaScript', 'TypeScript', 'HTML', 'CSS',
-  '状态管理', '组件生命周期', 'Hooks', '路由', '服务端渲染', '微前端',
-  'Node.js', 'Express', 'Koa', 'Nest.js', '数据库', 'SQL', 'NoSQL',
-  '算法', '数据结构', '设计模式', '网络协议', 'HTTP', 'WebSocket',
-  '安全', '认证', '授权', '加密', '测试', '部署', 'CI/CD'
+  'React', 'Virtual DOM', 'Performance Optimization', 'JavaScript', 'TypeScript', 'HTML', 'CSS',
+  'State Management', 'Component Lifecycle', 'Hooks', 'Routing', 'Server-Side Rendering', 'Micro Frontend',
+  'Node.js', 'Express', 'Koa', 'Nest.js', 'Database', 'SQL', 'NoSQL',
+  'Algorithms', 'Data Structures', 'Design Patterns', 'Network Protocols', 'HTTP', 'WebSocket',
+  'Security', 'Authentication', 'Authorization', 'Encryption', 'Testing', 'Deployment', 'CI/CD'
 ];
 
 export default function QuestionsPage() {
@@ -36,7 +36,7 @@ export default function QuestionsPage() {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   const [jobTitles, setJobTitles] = useState<string[]>([]);
 
-  // 获取题目列表
+  // Fetch question list
   const fetchQuestions = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
@@ -45,24 +45,23 @@ export default function QuestionsPage() {
       
       if (response.code === '0') {
         setQuestions(response.data || []);
-        // 假设总数为当前页数据数量，实际项目中应从API获取总数
         setPagination({
           ...pagination,
           current: page,
           total: (response.data?.length || 0) + skip,
         });
       } else {
-        message.error(response.message || '获取题目列表失败');
+        message.error(response.message || 'Failed to fetch question list');
       }
     } catch (error) {
-      message.error('获取题目列表失败');
+      message.error('Failed to fetch question list');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 获取职位列表，用于下拉选择
+  // Fetch job titles for dropdown
   const fetchJobTitles = async () => {
     try {
       const response = await jobApi.getJobs(0, 100);
@@ -71,29 +70,29 @@ export default function QuestionsPage() {
         setJobTitles(titles);
       }
     } catch (error) {
-      console.error('获取职位列表失败:', error);
+      console.error('Failed to fetch job titles:', error);
     }
   };
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     fetchQuestions();
     fetchJobTitles();
   }, []);
 
-  // 处理表格分页
+  // Handle table pagination
   const handleTableChange = (pagination: any) => {
     fetchQuestions(pagination.current, pagination.pageSize);
   };
 
-  // 打开添加题目模态框
+  // Open add question modal
   const showAddModal = () => {
     setCurrentQuestion(null);
     form.resetFields();
     setModalVisible(true);
   };
 
-  // 打开编辑题目模态框
+  // Open edit question modal
   const showEditModal = (question: Question) => {
     setCurrentQuestion(question);
     form.setFieldsValue({
@@ -108,19 +107,19 @@ export default function QuestionsPage() {
     setModalVisible(true);
   };
 
-  // 关闭模态框
+  // Close modal
   const handleCancel = () => {
     setModalVisible(false);
   };
 
-  // 提交表单
+  // Submit form
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setConfirmLoading(true);
       
       if (currentQuestion) {
-        // 更新题目
+        // Update question
         const updateData: UpdateQuestionRequest = {
           question: values.question,
           answer: values.answer,
@@ -134,14 +133,14 @@ export default function QuestionsPage() {
         const response = await questionApi.updateQuestion(currentQuestion.question_id, updateData);
         
         if (response.code === '0') {
-          message.success('题目更新成功');
+          message.success('Question updated successfully');
           setModalVisible(false);
           fetchQuestions(pagination.current, pagination.pageSize);
         } else {
-          message.error(response.message || '更新题目失败');
+          message.error(response.message || 'Failed to update question');
         }
       } else {
-        // 创建题目
+        // Create question
         const createData: CreateQuestionRequest = {
           question: values.question,
           answer: values.answer,
@@ -155,63 +154,63 @@ export default function QuestionsPage() {
         const response = await questionApi.createQuestion(createData);
         
         if (response.code === '0') {
-          message.success('题目创建成功');
+          message.success('Question created successfully');
           setModalVisible(false);
           fetchQuestions(pagination.current, pagination.pageSize);
         } else {
-          message.error(response.message || '创建题目失败');
+          message.error(response.message || 'Failed to create question');
         }
       }
     } catch (error) {
-      console.error('提交表单错误:', error);
-      message.error('操作失败，请重试');
+      console.error('Form submission error:', error);
+      message.error('Operation failed, please try again');
     } finally {
       setConfirmLoading(false);
     }
   };
 
-  // 删除题目
+  // Delete question
   const handleDelete = (questionId: string) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这个题目吗？此操作不可恢复。',
-      okText: '确认',
-      cancelText: '取消',
+      title: 'Confirm Deletion',
+      content: 'Are you sure you want to delete this question? This action cannot be undone.',
+      okText: 'Confirm',
+      cancelText: 'Cancel',
       onOk: async () => {
         try {
           const response = await questionApi.deleteQuestion(questionId);
           
           if (response.code === '0') {
-            message.success('题目删除成功');
+            message.success('Question deleted successfully');
             fetchQuestions(pagination.current, pagination.pageSize);
           } else {
-            message.error(response.message || '删除题目失败');
+            message.error(response.message || 'Failed to delete question');
           }
         } catch (error) {
-          console.error('删除题目错误:', error);
-          message.error('删除失败，请重试');
+          console.error('Error deleting question:', error);
+          message.error('Deletion failed, please try again');
         }
       },
     });
   };
 
-  // 表格列定义
+  // Table column definitions
   const columns = [
     {
-      title: '题目',
+      title: 'Question',
       dataIndex: 'question',
       key: 'question',
       ellipsis: true,
       width: 300,
     },
     {
-      title: '职位',
+      title: 'Job Title',
       dataIndex: 'job_title',
       key: 'job_title',
       width: 150,
     },
     {
-      title: '考察点',
+      title: 'Examination Points',
       dataIndex: 'examination_points',
       key: 'examination_points',
       width: 200,
@@ -226,7 +225,7 @@ export default function QuestionsPage() {
       ),
     },
     {
-      title: '难度',
+      title: 'Difficulty',
       dataIndex: 'difficulty',
       key: 'difficulty',
       width: 80,
@@ -244,21 +243,21 @@ export default function QuestionsPage() {
       },
     },
     {
-      title: '类型',
+      title: 'Type',
       dataIndex: 'type',
       key: 'type',
       width: 100,
       render: (type: string) => questionTypeMap[type] || type,
     },
     {
-      title: '语言',
+      title: 'Language',
       dataIndex: 'language',
       key: 'language',
       width: 80,
       render: (language: string) => languageMap[language] || language,
     },
     {
-      title: '操作',
+      title: 'Actions',
       key: 'action',
       width: 150,
       render: (_: any, record: Question) => (
@@ -268,14 +267,14 @@ export default function QuestionsPage() {
             icon={<EditOutlined />} 
             onClick={() => showEditModal(record)}
           >
-            编辑
+            Edit
           </Button>
           <Button 
             danger 
             icon={<DeleteOutlined />} 
             onClick={() => handleDelete(record.question_id)}
           >
-            删除
+            Delete
           </Button>
         </Space>
       ),
@@ -290,7 +289,7 @@ export default function QuestionsPage() {
           icon={<PlusOutlined />} 
           onClick={showAddModal}
         >
-          添加题目
+          Add Question
         </Button>
       </div>
       
@@ -304,7 +303,7 @@ export default function QuestionsPage() {
         expandable={{
           expandedRowRender: (record) => (
             <div style={{ margin: 0 }}>
-              <p><strong>答案：</strong></p>
+              <p><strong>Answer:</strong></p>
               <p style={{ whiteSpace: 'pre-wrap' }}>{record.answer}</p>
             </div>
           ),
@@ -312,13 +311,13 @@ export default function QuestionsPage() {
       />
 
       <Modal
-        title={currentQuestion ? '编辑题目' : '添加题目'}
+        title={currentQuestion ? 'Edit Question' : 'Add Question'}
         open={modalVisible}
         onOk={handleSubmit}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
-        okText={currentQuestion ? '更新' : '创建'}
-        cancelText="取消"
+        okText={currentQuestion ? 'Update' : 'Create'}
+        cancelText="Cancel"
         width={800}
       >
         <Form
@@ -333,34 +332,34 @@ export default function QuestionsPage() {
         >
           <Form.Item
             name="question"
-            label="题目内容"
-            rules={[{ required: true, message: '请输入题目内容' }]}
+            label="Question Content"
+            rules={[{ required: true, message: 'Please enter the question content' }]}
           >
             <TextArea 
-              placeholder="请输入题目内容" 
+              placeholder="Enter question content" 
               autoSize={{ minRows: 2, maxRows: 4 }}
             />
           </Form.Item>
           
           <Form.Item
             name="answer"
-            label="参考答案"
-            rules={[{ required: true, message: '请输入参考答案' }]}
+            label="Reference Answer"
+            rules={[{ required: true, message: 'Please enter the reference answer' }]}
           >
             <TextArea 
-              placeholder="请输入参考答案" 
+              placeholder="Enter reference answer" 
               autoSize={{ minRows: 4, maxRows: 8 }}
             />
           </Form.Item>
           
           <Form.Item
             name="examination_points"
-            label="考察点"
-            rules={[{ required: true, message: '请选择或输入考察点' }]}
+            label="Examination Points"
+            rules={[{ required: true, message: 'Please select or enter examination points' }]}
           >
             <Select
               mode="tags"
-              placeholder="请选择或输入考察点"
+              placeholder="Select or enter examination points"
               style={{ width: '100%' }}
               allowClear
               options={examinationPointOptions.map(point => ({ label: point, value: point }))}
@@ -369,11 +368,11 @@ export default function QuestionsPage() {
           
           <Form.Item
             name="job_title"
-            label="适用职位"
-            rules={[{ required: true, message: '请选择适用职位' }]}
+            label="Applicable Job Title"
+            rules={[{ required: true, message: 'Please select an applicable job title' }]}
           >
             <Select
-              placeholder="请选择适用职位"
+              placeholder="Select an applicable job title"
               style={{ width: '100%' }}
               allowClear
               showSearch
@@ -384,41 +383,41 @@ export default function QuestionsPage() {
           <div style={{ display: 'flex', gap: '16px' }}>
             <Form.Item
               name="difficulty"
-              label="难度"
-              rules={[{ required: true, message: '请选择难度' }]}
+              label="Difficulty"
+              rules={[{ required: true, message: 'Please select difficulty' }]}
               style={{ flex: 1 }}
             >
-              <Select placeholder="请选择难度">
-                <Option value="easy">简单</Option>
-                <Option value="medium">中等</Option>
-                <Option value="hard">困难</Option>
+              <Select placeholder="Select difficulty">
+                <Option value="easy">Easy</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="hard">Hard</Option>
               </Select>
             </Form.Item>
             
             <Form.Item
               name="type"
-              label="题目类型"
-              rules={[{ required: true, message: '请选择题目类型' }]}
+              label="Question Type"
+              rules={[{ required: true, message: 'Please select question type' }]}
               style={{ flex: 1 }}
             >
-              <Select placeholder="请选择题目类型">
-                <Option value="multiple_choice">多选题</Option>
-                <Option value="single_choice">单选题</Option>
-                <Option value="true_false">判断题</Option>
-                <Option value="short_answer">简答题</Option>
-                <Option value="essay">论述题</Option>
+              <Select placeholder="Select question type">
+                <Option value="multiple_choice">Multiple Choice</Option>
+                <Option value="single_choice">Single Choice</Option>
+                <Option value="true_false">True/False</Option>
+                <Option value="short_answer">Short Answer</Option>
+                <Option value="essay">Essay</Option>
               </Select>
             </Form.Item>
             
             <Form.Item
               name="language"
-              label="语言"
-              rules={[{ required: true, message: '请选择语言' }]}
+              label="Language"
+              rules={[{ required: true, message: 'Please select language' }]}
               style={{ flex: 1 }}
             >
-              <Select placeholder="请选择语言">
-                <Option value="Chinese">中文</Option>
-                <Option value="English">英文</Option>
+              <Select placeholder="Select language">
+                <Option value="Chinese">Chinese</Option>
+                <Option value="English">English</Option>
               </Select>
             </Form.Item>
           </div>
@@ -426,4 +425,4 @@ export default function QuestionsPage() {
       </Modal>
     </div>
   );
-} 
+}

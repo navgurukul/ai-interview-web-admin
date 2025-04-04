@@ -1,22 +1,22 @@
-// API响应类型
+// API Response Type
 export interface ApiResponse<T> {
   code: string;
   message: string;
   data: T | null;
 }
 
-// API基础URL
+// API Base URL
 export const API_BASE_URL = 'http://localhost:8000/api/v1';
 
-// 语言映射
+// Language Map
 export const languageMap: Record<string, string> = {
-  'Chinese': '中文',
-  'English': '英文'
+  'Chinese': 'Chinese',
+  'English': 'English'
 };
 
-// 难度映射
+// Difficulty Map
 export const difficultyMap: Record<string, string> = {
-  'easy': '简单',
-  'medium': '中等',
-  'hard': '困难'
+  'easy': 'Easy',
+  'medium': 'Medium',
+  'hard': 'Hard'
 };

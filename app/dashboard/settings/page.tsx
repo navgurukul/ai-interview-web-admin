@@ -9,7 +9,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // 获取系统设置
+  // Fetch system settings
   const fetchSettings = async () => {
     setLoading(true);
     try {
@@ -19,19 +19,19 @@ export default function SettingsPage() {
         form.setFieldsValue(data.settings);
       }
     } catch (error) {
-      message.error('获取系统设置失败');
+      message.error('Failed to fetch system settings');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     fetchSettings();
   }, []);
 
-  // 提交表单
+  // Submit form
   const handleSubmit = async (values: SystemSettings) => {
     setSubmitting(true);
     try {
@@ -40,9 +40,9 @@ export default function SettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-      message.success('系统设置已更新');
+      message.success('System settings updated successfully');
     } catch (error) {
-      message.error('更新系统设置失败');
+      message.error('Failed to update system settings');
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -50,60 +50,60 @@ export default function SettingsPage() {
   };
 
   return (
-    <Card title="系统设置" loading={loading}>
+    <Card title="System Settings" loading={loading}>
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
           theme: 'light',
-          language: 'zh',
+          language: 'en',
         }}
       >
         <Form.Item
           name="siteName"
-          label="系统名称"
-          rules={[{ required: true, message: '请输入系统名称' }]}
+          label="Site Name"
+          rules={[{ required: true, message: 'Please enter the site name' }]}
         >
-          <Input placeholder="请输入系统名称" />
+          <Input placeholder="Enter site name" />
         </Form.Item>
 
         <Form.Item
           name="logo"
-          label="Logo路径"
-          rules={[{ required: true, message: '请输入Logo路径' }]}
+          label="Logo Path"
+          rules={[{ required: true, message: 'Please enter the logo path' }]}
         >
-          <Input placeholder="请输入Logo路径" />
+          <Input placeholder="Enter logo path" />
         </Form.Item>
 
         <Form.Item
           name="theme"
-          label="主题"
-          rules={[{ required: true, message: '请选择主题' }]}
+          label="Theme"
+          rules={[{ required: true, message: 'Please select a theme' }]}
         >
           <Select>
-            <Select.Option value="light">浅色</Select.Option>
-            <Select.Option value="dark">深色</Select.Option>
+            <Select.Option value="light">Light</Select.Option>
+            <Select.Option value="dark">Dark</Select.Option>
           </Select>
         </Form.Item>
 
         <Form.Item
           name="language"
-          label="语言"
-          rules={[{ required: true, message: '请选择语言' }]}
+          label="Language"
+          rules={[{ required: true, message: 'Please select a language' }]}
         >
           <Select>
-            <Select.Option value="zh">中文</Select.Option>
-            <Select.Option value="en">英文</Select.Option>
+            <Select.Option value="en">English</Select.Option>
+            <Select.Option value="zh">Chinese</Select.Option>
           </Select>
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={submitting}>
-            保存设置
+            Save Settings
           </Button>
         </Form.Item>
       </Form>
     </Card>
   );
-} 
+}

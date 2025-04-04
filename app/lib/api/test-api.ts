@@ -1,6 +1,6 @@
 import { ApiResponse, API_BASE_URL, languageMap, difficultyMap } from './api-types';
 
-// 测试状态枚举
+// Test status enum
 export enum TestStatus {
   CREATED = "created",
   ACTIVATED = "activated",
@@ -9,30 +9,30 @@ export enum TestStatus {
   EXPIRED = "expired"
 }
 
-// 测试状态映射
+// Test status mapping
 export const testStatusMap: Record<string, string> = {
-  'created': '已创建',
-  'activated': '已激活',
-  'open': '进行中',
-  'completed': '已完成',
-  'expired': '已过期'
+  'created': 'Created',
+  'activated': 'Activated',
+  'open': 'In Progress',
+  'completed': 'Completed',
+  'expired': 'Expired'
 };
 
-// 测试类型枚举
+// Test type enum
 export enum TestType {
   INTERVIEW = "interview",
   CODING = "coding",
   BEHAVIOR = "behavior"
 }
 
-// 测试类型映射
+// Test type mapping
 export const testTypeMap: Record<string, string> = {
-  'interview': '面试测试',
-  'coding': '编程测试',
-  'behavior': '行为测试'
+  'interview': 'Interview Test',
+  'coding': 'Coding Test',
+  'behavior': 'Behavior Test'
 };
 
-// 测试类型定义
+// Test type definition
 export interface Test {
   test_id: string;
   activate_code: string;
@@ -53,7 +53,7 @@ export interface Test {
   update_date?: string;
 }
 
-// 创建测试请求类型
+// Create test request type
 export interface CreateTestRequest {
   job_id: string;
   user_id: string;
@@ -67,7 +67,7 @@ export interface CreateTestRequest {
   expire_date: string;
 }
 
-// 更新测试请求类型
+// Update test request type
 export interface UpdateTestRequest {
   status?: string;
   type?: string;
@@ -82,31 +82,31 @@ export interface UpdateTestRequest {
   expire_date?: string;
 }
 
-// 测试API
+// Test API
 export const testApi = {
-  // 获取测试列表
+  // Get test list
   async getTests(skip: number = 0, limit: number = 10): Promise<ApiResponse<Test[]>> {
     try {
       const response = await fetch(`${API_BASE_URL}/test?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
-      console.error('获取测试列表失败:', error);
-      return { code: '500', message: '获取测试列表失败', data: null };
+      console.error('Failed to fetch test list:', error);
+      return { code: '500', message: 'Failed to fetch test list', data: null };
     }
   },
 
-  // 获取单个测试
+  // Get a single test
   async getTestById(testId: string): Promise<ApiResponse<Test>> {
     try {
       const response = await fetch(`${API_BASE_URL}/test/${testId}`);
       return await response.json();
     } catch (error) {
-      console.error('获取测试详情失败:', error);
-      return { code: '500', message: '获取测试详情失败', data: null };
+      console.error('Failed to fetch test details:', error);
+      return { code: '500', message: 'Failed to fetch test details', data: null };
     }
   },
 
-  // 创建测试
+  // Create a test
   async createTest(testData: CreateTestRequest): Promise<ApiResponse<Test>> {
     try {
       const response = await fetch(`${API_BASE_URL}/test`, {
@@ -116,12 +116,12 @@ export const testApi = {
       });
       return await response.json();
     } catch (error) {
-      console.error('创建测试失败:', error);
-      return { code: '500', message: '创建测试失败', data: null };
+      console.error('Failed to create test:', error);
+      return { code: '500', message: 'Failed to create test', data: null };
     }
   },
 
-  // 更新测试
+  // Update a test
   async updateTest(testId: string, testData: UpdateTestRequest): Promise<ApiResponse<Test>> {
     try {
       const response = await fetch(`${API_BASE_URL}/test/${testId}`, {
@@ -131,12 +131,12 @@ export const testApi = {
       });
       return await response.json();
     } catch (error) {
-      console.error('更新测试失败:', error);
-      return { code: '500', message: '更新测试失败', data: null };
+      console.error('Failed to update test:', error);
+      return { code: '500', message: 'Failed to update test', data: null };
     }
   },
 
-  // 删除测试
+  // Delete a test
   async deleteTest(testId: string): Promise<ApiResponse<{ deleted: boolean }>> {
     try {
       const response = await fetch(`${API_BASE_URL}/test/${testId}`, {
@@ -144,8 +144,8 @@ export const testApi = {
       });
       return await response.json();
     } catch (error) {
-      console.error('删除测试失败:', error);
-      return { code: '500', message: '删除测试失败', data: null };
+      console.error('Failed to delete test:', error);
+      return { code: '500', message: 'Failed to delete test', data: null };
     }
   },
-}; 
+};

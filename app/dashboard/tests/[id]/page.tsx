@@ -22,13 +22,13 @@ import dayjs from 'dayjs';
 const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
 
-// 在组件顶部定义汇丰银行主题色（同上）
+// Define HSBC theme colors at the top of the component
 const HSBC_COLORS = {
-  primary: '#DB0011',    // 汇丰红色
-  secondary: '#333333',  // 深灰色
-  light: '#F5F5F5',      // 浅灰色背景
-  white: '#FFFFFF',      // 白色
-  border: '#E5E5E5',     // 边框色
+  primary: '#DB0011',    // HSBC red
+  secondary: '#333333',  // Dark gray
+  light: '#F5F5F5',      // Light gray background
+  white: '#FFFFFF',      // White
+  border: '#E5E5E5',     // Border color
 };
 
 export default function TestDetailPage() {
@@ -43,17 +43,17 @@ export default function TestDetailPage() {
   const [userName, setUserName] = useState<string>('');
   const [jobTitle, setJobTitle] = useState<string>('');
 
-  // 获取测试详情和结果
+  // Fetch test details and results
   useEffect(() => {
     const fetchTestData = async () => {
       setLoading(true);
       try {
-        // 获取测试详情
+        // Fetch test details
         const testResponse = await testApi.getTestById(testId);
         if (testResponse.code === '0' && testResponse.data) {
           setTest(testResponse.data);
           
-          // 获取用户和职位信息
+          // Fetch user and job information
           if (testResponse.data.user_id) {
             const userResponse = await userApi.getUserById(testResponse.data.user_id);
             if (userResponse.code === '0' && userResponse.data) {
@@ -68,7 +68,7 @@ export default function TestDetailPage() {
             }
           }
           
-          // 仅当测试状态为完成时才获取测试结果
+          // Fetch test results only if the test status is completed
           if (testResponse.data.status === 'completed') {
             const resultResponse = await testResultApi.getTestResult(testId);
             if (resultResponse.code === '0' && resultResponse.data) {
@@ -76,11 +76,11 @@ export default function TestDetailPage() {
             }
           }
         } else {
-          setError(testResponse.message || '获取测试详情失败');
+          setError(testResponse.message || 'Failed to fetch test details');
         }
       } catch (err) {
-        console.error('获取测试详情失败:', err);
-        setError('获取测试详情时发生错误');
+        console.error('Failed to fetch test details:', err);
+        setError('An error occurred while fetching test details');
       } finally {
         setLoading(false);
       }
@@ -91,12 +91,12 @@ export default function TestDetailPage() {
     }
   }, [testId]);
 
-  // 返回测试列表页
+  // Navigate back to the test list page
   const handleGoBack = () => {
     router.push('/dashboard/tests');
   };
 
-  // 获取测试状态标签颜色
+  // Get the color for the test status tag
   const getStatusColor = (status: string) => {
     const statusColorMap: Record<string, string> = {
       created: HSBC_COLORS.secondary,
@@ -111,7 +111,7 @@ export default function TestDetailPage() {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <Spin size="large" tip="加载中..." />
+        <Spin size="large" tip="Loading..." />
       </div>
     );
   }
@@ -120,13 +120,13 @@ export default function TestDetailPage() {
     return (
       <div style={{ padding: '24px' }}>
         <Alert
-          message="错误"
+          message="Error"
           description={error}
           type="error"
           showIcon
           action={
             <Button size="small" type="primary" onClick={handleGoBack}>
-              返回列表
+              Back to List
             </Button>
           }
         />
@@ -138,13 +138,13 @@ export default function TestDetailPage() {
     return (
       <div style={{ padding: '24px' }}>
         <Alert
-          message="未找到测试"
-          description="未能找到指定的测试信息"
+          message="Test Not Found"
+          description="The specified test information could not be found"
           type="warning"
           showIcon
           action={
             <Button size="small" type="primary" onClick={handleGoBack}>
-              返回列表
+              Back to List
             </Button>
           }
         />
@@ -154,7 +154,7 @@ export default function TestDetailPage() {
 
   return (
     <div style={{ padding: '24px' }}>
-      {/* 导航栏 */}
+      {/* Navigation Bar */}
       <div style={{ marginBottom: '24px' }}>
         <Button 
           type="link" 
@@ -162,15 +162,15 @@ export default function TestDetailPage() {
           onClick={handleGoBack}
           style={{ paddingLeft: 0, color: HSBC_COLORS.primary }}
         >
-          返回测试列表
+          Back to Test List
         </Button>
       </div>
       
-      {/* 测试基本信息 */}
+      {/* Test Basic Information */}
       <Card 
         title={
           <Space size="middle">
-            <Title level={4} style={{ margin: 0, color: HSBC_COLORS.secondary }}>测试详情</Title>
+            <Title level={4} style={{ margin: 0, color: HSBC_COLORS.secondary }}>Test Details</Title>
             <Tag color={getStatusColor(test.status)}>{testStatusMap[test.status] || test.status}</Tag>
           </Space>
         }
@@ -184,24 +184,24 @@ export default function TestDetailPage() {
         }}
       >
         <Descriptions bordered column={{ xxl: 4, xl: 3, lg: 3, md: 2, sm: 1, xs: 1 }}>
-          <Descriptions.Item label="测试ID">{test.test_id}</Descriptions.Item>
-          <Descriptions.Item label="激活码">{test.activate_code}</Descriptions.Item>
-          <Descriptions.Item label="用户">{userName || test.user_name || '未知用户'}</Descriptions.Item>
-          <Descriptions.Item label="职位">{jobTitle || test.job_title || '未知职位'}</Descriptions.Item>
-          <Descriptions.Item label="测试类型">{testTypeMap[test.type] || test.type}</Descriptions.Item>
-          <Descriptions.Item label="测试语言">{languageMap[test.language] || test.language}</Descriptions.Item>
-          <Descriptions.Item label="难度">{difficultyMap[test.difficulty] || test.difficulty}</Descriptions.Item>
-          <Descriptions.Item label="时长">{test.test_time}分钟</Descriptions.Item>
-          <Descriptions.Item label="开始时间" span={2}>
+          <Descriptions.Item label="Test ID">{test.test_id}</Descriptions.Item>
+          <Descriptions.Item label="Activation Code">{test.activate_code}</Descriptions.Item>
+          <Descriptions.Item label="User">{userName || test.user_name || 'Unknown User'}</Descriptions.Item>
+          <Descriptions.Item label="Job">{jobTitle || test.job_title || 'Unknown Job'}</Descriptions.Item>
+          <Descriptions.Item label="Test Type">{testTypeMap[test.type] || test.type}</Descriptions.Item>
+          <Descriptions.Item label="Test Language">{languageMap[test.language] || test.language}</Descriptions.Item>
+          <Descriptions.Item label="Difficulty">{difficultyMap[test.difficulty] || test.difficulty}</Descriptions.Item>
+          <Descriptions.Item label="Duration">{test.test_time} minutes</Descriptions.Item>
+          <Descriptions.Item label="Start Time" span={2}>
             {dayjs(test.start_date).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
-          <Descriptions.Item label="过期时间" span={2}>
+          <Descriptions.Item label="Expiration Time" span={2}>
             {dayjs(test.expire_date).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
-          <Descriptions.Item label="创建时间" span={2}>
+          <Descriptions.Item label="Creation Time" span={2}>
             {dayjs(test.create_date).format('YYYY-MM-DD HH:mm:ss')}
           </Descriptions.Item>
-          <Descriptions.Item label="考察要点" span={4}>
+          <Descriptions.Item label="Examination Points" span={4}>
             <Space size={[0, 8]} wrap>
               {test.examination_points?.map((point, index) => (
                 <Tag key={index} color="blue">{point}</Tag>
@@ -211,30 +211,30 @@ export default function TestDetailPage() {
         </Descriptions>
       </Card>
       
-      {/* 测试结果 */}
+      {/* Test Results */}
       {test.status === 'completed' ? (
         testResult ? (
           <>
-            {/* 测试结果概览 */}
-            <Card title={<Title level={4} style={{ margin: 0 }}>测试结果</Title>} style={{ marginBottom: '24px' }}>
+            {/* Test Results Overview */}
+            <Card title={<Title level={4} style={{ margin: 0 }}>Test Results</Title>} style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
                 <div style={{ textAlign: 'center', minWidth: '150px' }}>
                   <Progress
                     type="dashboard"
                     percent={testResult.score}
-                    format={percent => `${percent}分`}
+                    format={percent => `${percent} points`}
                     status={testResult.score >= 60 ? 'success' : 'exception'}
                     strokeColor={testResult.score >= 60 ? '#006633' : HSBC_COLORS.primary}
                   />
-                  <div style={{ marginTop: '8px' }}>总分</div>
+                  <div style={{ marginTop: '8px' }}>Total Score</div>
                 </div>
                 
                 <div style={{ flex: 1 }}>
                   <Descriptions bordered column={2}>
-                    <Descriptions.Item label="总题数">{testResult.question_number}题</Descriptions.Item>
-                    <Descriptions.Item label="正确题数">{testResult.correct_number}题</Descriptions.Item>
-                    <Descriptions.Item label="耗时">{testResult.elapse_time.toFixed(1)}分钟</Descriptions.Item>
-                    <Descriptions.Item label="完成时间">
+                    <Descriptions.Item label="Total Questions">{testResult.question_number} questions</Descriptions.Item>
+                    <Descriptions.Item label="Correct Questions">{testResult.correct_number} questions</Descriptions.Item>
+                    <Descriptions.Item label="Time Taken">{testResult.elapse_time.toFixed(1)} minutes</Descriptions.Item>
+                    <Descriptions.Item label="Completion Time">
                       {dayjs(testResult.created_at).format('YYYY-MM-DD HH:mm:ss')}
                     </Descriptions.Item>
                   </Descriptions>
@@ -242,7 +242,7 @@ export default function TestDetailPage() {
                   <Divider />
                   
                   <Paragraph>
-                    <Title level={5}>测试总结</Title>
+                    <Title level={5}>Test Summary</Title>
                     <div className="markdown-content">
                       <ReactMarkdown>{testResult.summary}</ReactMarkdown>
                     </div>
@@ -251,29 +251,29 @@ export default function TestDetailPage() {
               </div>
             </Card>
             
-            {/* 问答历史 */}
-            <Card title={<Title level={4} style={{ margin: 0 }}>问答详情</Title>}>
+            {/* Q&A History */}
+            <Card title={<Title level={4} style={{ margin: 0 }}>Q&A Details</Title>}>
               <Collapse defaultActiveKey={['0']} accordion>
                 {testResult.qa_history.map((qa, index) => (
                   <Panel 
                     header={
                       <Space>
-                        <span>问题 {index + 1}</span>
+                        <span>Question {index + 1}</span>
                         <Text ellipsis style={{ maxWidth: '500px' }}>{qa.question}</Text>
                       </Space>
                     } 
                     key={index}
                   >
                     <Descriptions bordered column={1} layout="vertical">
-                      <Descriptions.Item label="问题">
+                      <Descriptions.Item label="Question">
                         <div className="markdown-content">
                           <ReactMarkdown>{qa.question}</ReactMarkdown>
                         </div>
                       </Descriptions.Item>
-                      <Descriptions.Item label="回答">
+                      <Descriptions.Item label="Answer">
                         <div style={{ whiteSpace: 'pre-wrap' }}>{qa.answer}</div>
                       </Descriptions.Item>
-                      <Descriptions.Item label="点评">
+                      <Descriptions.Item label="Feedback">
                         <div style={{ whiteSpace: 'pre-wrap' }}>{qa.summary}</div>
                       </Descriptions.Item>
                     </Descriptions>
@@ -284,16 +284,16 @@ export default function TestDetailPage() {
           </>
         ) : (
           <Alert
-            message="未找到测试结果"
-            description="该测试已完成，但未找到相关测试结果数据"
+            message="Test Results Not Found"
+            description="The test is completed, but no related test result data was found"
             type="warning"
             showIcon
           />
         )
       ) : (
         <Alert
-          message="测试未完成"
-          description={`当前测试状态为"${testStatusMap[test.status] || test.status}"，测试完成后才能查看结果`}
+          message="Test Not Completed"
+          description={`The current test status is "${testStatusMap[test.status] || test.status}". Results can only be viewed after the test is completed.`}
           type="info"
           showIcon
         />

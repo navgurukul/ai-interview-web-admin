@@ -10,7 +10,7 @@ export async function GET(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '获取测试详情失败', data: null },
+      { code: '500', message: 'Failed to fetch test details', data: null },
       { status: 500 }
     );
   }
@@ -31,7 +31,7 @@ export async function PUT(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '更新测试失败', data: null },
+      { code: '500', message: 'Failed to update test', data: null },
       { status: 500 }
     );
   }
@@ -49,7 +49,7 @@ export async function DELETE(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '删除测试失败', data: null },
+      { code: '500', message: 'Failed to delete test', data: null },
       { status: 500 }
     );
   }
