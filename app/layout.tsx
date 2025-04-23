@@ -6,8 +6,8 @@ import './styles/hsbc-theme.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI Interview 管理系统',
-  description: '一个功能强大的AI Interview后台管理系统',
+  title: 'AI Interview Management System',
+  description: 'A powerful AI Interview backend management system',
 };
 
 export default function RootLayout({

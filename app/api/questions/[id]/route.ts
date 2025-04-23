@@ -10,7 +10,7 @@ export async function GET(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '获取题目详情失败', data: null },
+      { code: '500', message: 'Failed to obtain question details', data: null },
       { status: 500 }
     );
   }
@@ -31,7 +31,7 @@ export async function PUT(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '更新题目失败', data: null },
+      { code: '500', message: 'Failed to update question', data: null },
       { status: 500 }
     );
   }
@@ -49,7 +49,7 @@ export async function DELETE(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '删除题目失败', data: null },
+      { code: '500', message: 'Failed to delete question', data: null },
       { status: 500 }
     );
   }

@@ -10,7 +10,7 @@ export async function GET(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '获取职位详情失败', data: null },
+      { code: '500', message: 'Failed to obtain job details', data: null },
       { status: 500 }
     );
   }
@@ -31,7 +31,7 @@ export async function PUT(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '更新职位失败', data: null },
+      { code: '500', message: 'Failed to update position', data: null },
       { status: 500 }
     );
   }
@@ -49,7 +49,7 @@ export async function DELETE(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { code: '500', message: '删除职位失败', data: null },
+      { code: '500', message: 'Failed to delete position', data: null },
       { status: 500 }
     );
   }
