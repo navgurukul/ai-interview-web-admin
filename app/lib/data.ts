@@ -1,4 +1,4 @@
-// 用户类型定义
+// User type definition
 export interface User {
   id: string;
   name: string;
@@ -8,11 +8,11 @@ export interface User {
   createdAt: string;
 }
 
-// 模拟的初始用户数据
+// Mock initial user data
 let users: User[] = [
   {
     id: '1',
-    name: '张三',
+    name: 'Zhang San',
     email: 'zhangsan@example.com',
     role: 'admin',
     status: 'active',
@@ -20,7 +20,7 @@ let users: User[] = [
   },
   {
     id: '2',
-    name: '李四',
+    name: 'Li Si',
     email: 'lisi@example.com',
     role: 'user',
     status: 'active',
@@ -28,7 +28,7 @@ let users: User[] = [
   },
   {
     id: '3',
-    name: '王五',
+    name: 'Wang Wu',
     email: 'wangwu@example.com',
     role: 'guest',
     status: 'inactive',
@@ -36,17 +36,17 @@ let users: User[] = [
   },
 ];
 
-// 获取所有用户
+// Get all users
 export function getUsers() {
   return [...users];
 }
 
-// 获取单个用户
+// Get a single user
 export function getUserById(id: string) {
   return users.find(user => user.id === id);
 }
 
-// 创建用户
+// Create a user
 export function createUser(userData: Omit<User, 'id' | 'createdAt'>) {
   const newUser = {
     ...userData,
@@ -57,7 +57,7 @@ export function createUser(userData: Omit<User, 'id' | 'createdAt'>) {
   return newUser;
 }
 
-// 更新用户
+// Update a user
 export function updateUser(id: string, userData: Partial<Omit<User, 'id' | 'createdAt'>>) {
   const index = users.findIndex(user => user.id === id);
   if (index !== -1) {
@@ -67,7 +67,7 @@ export function updateUser(id: string, userData: Partial<Omit<User, 'id' | 'crea
   return null;
 }
 
-// 删除用户
+// Delete a user
 export function deleteUser(id: string) {
   const index = users.findIndex(user => user.id === id);
   if (index !== -1) {
@@ -78,7 +78,7 @@ export function deleteUser(id: string) {
   return null;
 }
 
-// 系统设置类型
+// System settings type
 export interface SystemSettings {
   siteName: string;
   logo: string;
@@ -86,21 +86,21 @@ export interface SystemSettings {
   language: 'zh' | 'en';
 }
 
-// 默认系统设置
+// Default system settings
 let systemSettings: SystemSettings = {
-  siteName: 'AI Interview 系统',
+  siteName: 'AI Interview System',
   logo: '/logo.png',
   theme: 'light',
   language: 'zh',
 };
 
-// 获取系统设置
+// Get system settings
 export function getSystemSettings() {
   return { ...systemSettings };
 }
 
-// 更新系统设置
+// Update system settings
 export function updateSystemSettings(settings: Partial<SystemSettings>) {
   systemSettings = { ...systemSettings, ...settings };
   return systemSettings;
-} 
+}
