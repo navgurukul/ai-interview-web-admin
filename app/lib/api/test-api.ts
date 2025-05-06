@@ -1,4 +1,4 @@
-import { ApiResponse, API_BASE_URL, languageMap, difficultyMap } from './api-types';
+import { ApiResponse, languageMap, difficultyMap } from './api-types';
 
 // Test status enum
 export enum TestStatus {
@@ -87,7 +87,7 @@ export const testApi = {
   // Get test list
   async getTests(skip: number = 0, limit: number = 10): Promise<ApiResponse<Test[]>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/test?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`http://65.0.157.180/api/v1/test?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch test list:', error);
@@ -98,7 +98,7 @@ export const testApi = {
   // Get a single test
   async getTestById(testId: string): Promise<ApiResponse<Test>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/test/${testId}`);
+      const response = await fetch(`http://65.0.157.180/api/v1/test/${testId}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch test details:', error);
@@ -109,7 +109,7 @@ export const testApi = {
   // Create a test
   async createTest(testData: CreateTestRequest): Promise<ApiResponse<Test>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/test`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/test`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData),
@@ -124,7 +124,7 @@ export const testApi = {
   // Update a test
   async updateTest(testId: string, testData: UpdateTestRequest): Promise<ApiResponse<Test>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/test/${testId}`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/test/${testId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData),
@@ -139,7 +139,7 @@ export const testApi = {
   // Delete a test
   async deleteTest(testId: string): Promise<ApiResponse<{ deleted: boolean }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/test/${testId}`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/test/${testId}`, {
         method: 'DELETE',
       });
       return await response.json();
