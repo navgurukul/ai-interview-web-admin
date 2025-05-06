@@ -4,8 +4,9 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const response = await fetch(`http://localhost:8000/api/v1/job/${params.id}`);
+  try { 
+    //const response = await fetch(`http://localhost:8000/api/v1/job/${params.id}`);
+    const response = await fetch(`http://65.0.157.180/api/v1/job/${params.id}`);
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
@@ -22,7 +23,8 @@ export async function PUT(
 ) {
   try {
     const jobData = await request.json();
-    const response = await fetch(`http://localhost:8000/api/v1/job/${params.id}`, {
+    //const response = await fetch(`http://localhost:8000/api/v1/job/${params.id}`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/job/${params.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(jobData),
@@ -42,7 +44,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/job/${params.id}`, {
+    //const response = await fetch(`http://localhost:8000/api/v1/job/${params.id}`, {
+    const response = await fetch(`http://65.0.157.180/api/v1/job/${params.id}`, {
+
       method: 'DELETE',
     });
     const data = await response.json();
