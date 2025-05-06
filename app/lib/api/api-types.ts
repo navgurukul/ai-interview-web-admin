@@ -6,6 +6,9 @@ export interface ApiResponse<T> {
 }
 
 // API Base URL
+
+//export const API_BASE_URL = 'http://localhost:8000/api/v1';
+
 export const API_BASE_URL = 'http://65.0.157.180/api/v1';
 
 // Language Map
