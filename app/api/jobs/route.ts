@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const limit = searchParams.get('limit') || '10';
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/job?skip=${skip}&limit=${limit}`);
+    const response = await fetch(`https://interview.merakilearn.org/api/v1/job?skip=${skip}&limit=${limit}`);
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const jobData = await request.json();
-    const response = await fetch('http://localhost:8000/api/v1/job', {
+    const response = await fetch(`https://interview.merakilearn.org/api/v1/job`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(jobData),

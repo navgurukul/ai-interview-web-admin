@@ -49,7 +49,7 @@ export const jobApi = {
       return { code: '500', message: 'Failed to fetch job details', data: null };
     }
   },
-
+  
   // Create a job
   async createJob(jobData: CreateJobRequest): Promise<ApiResponse<Job>> {
     try {
@@ -64,7 +64,7 @@ export const jobApi = {
       return { code: '500', message: 'Failed to create job', data: null };
     }
   },
-
+  
   // Update a job
   async updateJob(jobId: string, jobData: UpdateJobRequest): Promise<ApiResponse<Job>> {
     try {

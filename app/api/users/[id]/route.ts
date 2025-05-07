@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/user/${params.id}`);
+    const response = await fetch(`https://interview.merakilearn.org/api/v1/user/${params.id}`);
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
@@ -24,7 +24,7 @@ export async function PUT(
 ) {
   try {
     const userData = await request.json();
-    const response = await fetch(`http://localhost:8000/api/v1/user/${params.id}`, {
+    const response = await fetch(`https://interview.merakilearn.org/api/v1/user/${params.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -45,7 +45,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/user/${params.id}`, {
+    const response = await fetch(`https://interview.merakilearn.org/api/v1/user/${params.id}`, {
       method: 'DELETE',
     });
     const data = await response.json();
