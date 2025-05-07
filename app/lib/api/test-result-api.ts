@@ -1,5 +1,5 @@
 // Create Test Result API
-import { ApiResponse } from './api-types';
+import { ApiResponse, API_BASE_URL } from './api-types';
 
 // Add TestResult interface definition
 
@@ -25,7 +25,7 @@ export const testResultApi = {
   // Fetch test result
   async getTestResult(testId: string): Promise<ApiResponse<TestResult>> {
   try {
-    const response = await fetch(`http://65.0.157.180/api/v1/test_result/test/${testId}`);
+    const response = await fetch(`${API_BASE_URL}/test_result/test/${testId}`);
     return await response.json();
   } catch (error) {
     console.error('Failed to fetch test result:', error);
