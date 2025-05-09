@@ -5,7 +5,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`https://interview.merakilearn.org/api/v1/test/${params.id}`);
+    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/test/${params.id}`);
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
@@ -22,7 +22,7 @@ export async function PUT(
 ) {
   try {
     const testData = await request.json();
-    const response = await fetch(`https://interview.merakilearn.org/api/v1/test/${params.id}`, {
+    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/test/${params.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(testData),
@@ -42,7 +42,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`https://interview.merakilearn.org/api/v1/test/${params.id}`, {
+    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/test/${params.id}`, {
       method: 'DELETE',
     });
     const data = await response.json();
