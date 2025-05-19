@@ -14,14 +14,14 @@ export async function GET(request: Request) {
     return NextResponse.json(
       { code: '500', message: 'Failed to fetch the question list', data: null },
       { status: 500 }
-    );  
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
     const questionData = await request.json();
-    const response = await fetch(`https://interview.merakilearn.org/api/v1/question`, {
+    const response = await fetch(`https://interview.merakilearn.org/api/v1//question`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(questionData),
