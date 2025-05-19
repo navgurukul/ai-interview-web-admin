@@ -1,4 +1,4 @@
-import { ApiResponse, languageMap, difficultyMap } from './api-types';
+import { ApiResponse, API_BASE_URL, languageMap, difficultyMap } from './api-types';
 
 // Question type definition
 export interface Question {
@@ -48,7 +48,7 @@ export const questionApi = {
   // Get question list
   async getQuestions(skip: number = 0, limit: number = 10): Promise<ApiResponse<Question[]>> {
     try {
-      const response = await fetch(`http://65.0.157.180/api/v1/question?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`${API_BASE_URL}/question?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch question list:', error);
@@ -59,7 +59,7 @@ export const questionApi = {
   // Get a single question
   async getQuestionById(questionId: string): Promise<ApiResponse<Question>> {
     try {
-      const response = await fetch(`http://65.0.157.180/api/v1/question/${questionId}`);
+      const response = await fetch(`${API_BASE_URL}/question/${questionId}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch question details:', error);
@@ -70,7 +70,7 @@ export const questionApi = {
   // Create a question
   async createQuestion(questionData: CreateQuestionRequest): Promise<ApiResponse<Question>> {
     try {
-      const response = await fetch(`http://65.0.157.180/api/v1/question`, {
+      const response = await fetch(`${API_BASE_URL}/question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(questionData),
@@ -85,7 +85,7 @@ export const questionApi = {
   // Update a question
   async updateQuestion(questionId: string, questionData: UpdateQuestionRequest): Promise<ApiResponse<Question>> {
     try {
-      const response = await fetch(`http://65.0.157.180/api/v1/question/${questionId}`, {
+      const response = await fetch(`${API_BASE_URL}/question/${questionId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(questionData),
@@ -100,7 +100,7 @@ export const questionApi = {
   // Delete a question
   async deleteQuestion(questionId: string): Promise<ApiResponse<{ deleted: boolean }>> {
     try {
-      const response = await fetch(`http://65.0.157.180/api/v1/question/${questionId}`, {
+      const response = await fetch(`${API_BASE_URL}/question/${questionId}`, {
         method: 'DELETE',
       });
       return await response.json();
