@@ -7,7 +7,6 @@ export async function GET(request: Request) {
   const limit = searchParams.get('limit') || '10';
   
   try {
-    //const response = await fetch(`http://localhost:8000/api/v1/test?skip=${skip}&limit=${limit}`);
     const response = await fetch(`http://65.0.157.180/api/v1/test?skip=${skip}&limit=${limit}`);
     const data = await response.json();
     return NextResponse.json(data);
@@ -22,8 +21,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const testData = await request.json();
-    //const response = await fetch('http://localhost:8000/api/v1/test', {
-      const response = await fetch('http://65.0.157.180/api/v1/test', {
+    const response = await fetch(`http://65.0.157.180/api/v1/test`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(testData),

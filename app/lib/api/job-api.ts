@@ -1,4 +1,4 @@
-import { ApiResponse, API_BASE_URL } from './api-types';
+import { ApiResponse } from './api-types';
 
 // Job type definition
 export interface Job {
@@ -31,7 +31,7 @@ export const jobApi = {
   // Get job list
   async getJobs(skip: number = 0, limit: number = 10): Promise<ApiResponse<Job[]>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/job?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`http://65.0.157.180/api/v1/job?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch job list:', error);
@@ -42,18 +42,18 @@ export const jobApi = {
   // Get a single job
   async getJobById(jobId: string): Promise<ApiResponse<Job>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/job/${jobId}`);
+      const response = await fetch(`http://65.0.157.180/api/v1/job/${jobId}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch job details:', error);
       return { code: '500', message: 'Failed to fetch job details', data: null };
     }
   },
-
+  
   // Create a job
   async createJob(jobData: CreateJobRequest): Promise<ApiResponse<Job>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/job`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/job`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(jobData),
@@ -64,11 +64,11 @@ export const jobApi = {
       return { code: '500', message: 'Failed to create job', data: null };
     }
   },
-
+  
   // Update a job
   async updateJob(jobId: string, jobData: UpdateJobRequest): Promise<ApiResponse<Job>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/job/${jobId}`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/job/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(jobData),
@@ -83,7 +83,7 @@ export const jobApi = {
   // Delete a job
   async deleteJob(jobId: string): Promise<ApiResponse<{ deleted: boolean }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/job/${jobId}`, {
+      const response = await fetch(`http://65.0.157.180/api/v1/job/${jobId}`, {
         method: 'DELETE',
       });
       return await response.json();
