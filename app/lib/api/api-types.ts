@@ -7,11 +7,16 @@ export interface ApiResponse<T> {
 
 // API Base URL
 
+<<<<<<< HEAD
 
 
 export const API_BASE_URL = 'https://interview.merakilearn.org/api/v1';
 
 
+=======
+export const API_BASE_URL = 'https://interview.merakilearn.org/api/v1';
+
+>>>>>>> 4106674 (Fix API_BASE_URL)
 
 // Language Map
 export const languageMap: Record<string, string> = {
