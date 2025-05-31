@@ -46,13 +46,16 @@ export const questionTypeMap: Record<string, string> = {
 // Question API
 export const questionApi = {
   // Get question list
+  // The backend API endpoint /api/v1/question (or its actual implementation)
+  // must return a `total: number` field in the JSON response object,
+  // representing the total number of questions, for pagination to work correctly.
   async getQuestions(skip: number = 0, limit: number = 10): Promise<ApiResponse<Question[]>> {
     try {
       const response = await fetch(`${API_BASE_URL}/question?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch question list:', error);
-      return { code: '500', message: 'Failed to fetch question list', data: null };
+      return { code: '500', message: 'Failed to fetch question list', data: null, total: 0 };
     }
   },
 

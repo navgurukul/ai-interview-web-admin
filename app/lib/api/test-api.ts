@@ -85,13 +85,16 @@ export interface UpdateTestRequest {
 // Test API
 export const testApi = {
   // Get test list
+  // The backend API endpoint /api/v1/test (or its actual implementation)
+  // must return a `total: number` field in the JSON response object,
+  // representing the total number of tests, for pagination to work correctly.
   async getTests(skip: number = 0, limit: number = 10): Promise<ApiResponse<Test[]>> {
     try {
       const response = await fetch(`${API_BASE_URL}/test?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch test list:', error);
-      return { code: '500', message: 'Failed to fetch test list', data: null };
+      return { code: '500', message: 'Failed to fetch test list', data: null, total: 0 };
     }
   },
 

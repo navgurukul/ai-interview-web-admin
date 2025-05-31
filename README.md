@@ -27,6 +27,7 @@ This is an AI Interview Admin Management System built using NextJS 15, React 19,
    ```
    NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
    ```
+   (For production deployments, this variable must be set in your hosting environment's settings, e.g., on Vercel, Netlify, AWS, etc.)
 
 3. Start the development server:
    ```bash
