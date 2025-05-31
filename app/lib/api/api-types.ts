@@ -1,8 +1,9 @@
 // API Response Type
 export interface ApiResponse<T> {
-  code: string;
+  code:string;
   message: string;
   data: T | null;
+  total?: number;
 }
 
 // API Base URL

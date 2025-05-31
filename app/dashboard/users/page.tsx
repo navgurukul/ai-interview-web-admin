@@ -27,7 +27,8 @@ export default function UsersPage() {
         setPagination({
           ...pagination,
           current: page,
-          total: (response.data?.length || 0) + skip,
+          pageSize: pageSize,
+          total: response.total || 0,
         });
       } else {
         message.error(response.message || 'Failed to fetch user list');
