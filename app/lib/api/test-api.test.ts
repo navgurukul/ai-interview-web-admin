@@ -225,3 +225,187 @@ describe('testApi.createTest with email functionality', () => {
   });
 
 });
+
+// Import TestStatus and UpdateTestRequest if not already imported at the top
+import { TestStatus, UpdateTestRequest } from './test-api';
+import { TestResult } from './test-result-api'; // Assuming TestResult interface is in test-result-api.ts
+
+describe('testApi.updateTest with email functionality', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockCreateTransport.mockReturnValue(mockTransporter as any);
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Log spy for general console.log, useful for debugging or specific info logs
+    // consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
+    // consoleLogSpy.mockRestore();
+  });
+
+  const testId = 'testId123';
+  const mockUserId = 'userFromUpdateTest123';
+
+  const mockUpdateTestData = (status: TestStatus): UpdateTestRequest => ({
+    status: status,
+  });
+
+  const mockSuccessfulTestUpdateResponse = (userIdToReturn: string | undefined = mockUserId): ApiResponse<Test> => ({
+    code: '00000',
+    message: 'Test updated successfully',
+    data: {
+      test_id: testId,
+      activate_code: 'activateUpdated123',
+      user_id: userIdToReturn, // Crucial for fetching user email
+      status: TestStatus.COMPLETED,
+      type: 'coding',
+      language: 'python',
+      difficulty: 'hard',
+      question_ids: ['q1', 'q2'],
+      examination_points: ['p1', 'p2'],
+      test_time: 120,
+      create_date: new Date().toISOString(),
+      start_date: new Date().toISOString(),
+      expire_date: new Date().toISOString(),
+      update_date: new Date().toISOString(),
+    },
+  });
+
+  const mockUserDetailResponse = (email: string | null = 'completeduser@example.com'): ApiResponse<any> => ({
+    code: '00000',
+    message: 'User fetched successfully',
+    data: {
+      user_id: mockUserId,
+      email: email,
+      name: 'Completed Test User',
+    },
+  });
+
+  const mockTestResultResponse = (
+    score: number = 85,
+    summary: string = 'Good performance',
+    question_number: number = 10,
+    correct_number: number = 8,
+    elapse_time: number = 3600, // seconds
+    total_score: number = 100
+  ): ApiResponse<TestResult> => ({
+    code: '00000',
+    message: 'Test results fetched successfully',
+    data: ({
+      test_id: testId,
+      user_id: mockUserId,
+      score,
+      summary,
+      question_number, // Corrected field from TestResult
+      correct_number,  // Corrected field from TestResult
+      elapse_time,     // Corrected field from TestResult (seconds)
+      total_score,
+      create_date: new Date().toISOString(),
+      update_date: new Date().toISOString(),
+      details: [], // Assuming details are not strictly needed for email content
+    } as TestResult), // Cast to TestResult to satisfy type checker if TestResult has more fields
+  });
+
+
+  it('Scenario 1: should send an email when test status is updated to COMPLETED', async () => {
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse() }) // Test Update
+      .mockResolvedValueOnce({ ok: true, json: async () => mockUserDetailResponse() })         // User Fetch
+      .mockResolvedValueOnce({ ok: true, json: async () => mockTestResultResponse() });       // Test Result Fetch
+
+    const result = await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+
+    expect(result).toEqual(mockSuccessfulTestUpdateResponse());
+    expect(nodemailer.createTransport).toHaveBeenCalledTimes(1);
+    expect(mockSendMail).toHaveBeenCalledTimes(1);
+    expect(mockSendMail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: 'completeduser@example.com',
+        subject: 'Your Test Results are Ready',
+        html: expect.stringContaining('<strong>Score:</strong> 85') &&
+              expect.stringContaining('<strong>Summary:</strong> Good performance') &&
+              expect.stringContaining('<strong>Total Questions:</strong> 10') &&
+              expect.stringContaining('<strong>Correct Answers:</strong> 8') &&
+              expect.stringContaining('<strong>Time Spent:</strong> 60.00 minutes'), // 3600s / 60
+      }),
+      expect.any(Function)
+    );
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('Scenario 2: should NOT send email if status is not COMPLETED', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse() });
+
+    await testApi.updateTest(testId, mockUpdateTestData(TestStatus.STARTED));
+    expect(mockSendMail).not.toHaveBeenCalled();
+  });
+
+  it('Scenario 3: should NOT send email if primary test update fails', async () => {
+    const failedUpdateResponse = { code: 'E5000', message: 'Update failed', data: null };
+    (fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => failedUpdateResponse });
+
+    const result = await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+    expect(result).toEqual(failedUpdateResponse);
+    expect(mockSendMail).not.toHaveBeenCalled();
+  });
+
+  it('Scenario 4: should NOT send email if user_id is missing in test update response', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse(undefined) });
+
+    await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+    expect(mockSendMail).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalledWith('User ID not found in updated test data, cannot send completion email.', { testId });
+  });
+
+  it('Scenario 5a: should NOT send email if userApi.getUserById fails (API error)', async () => {
+    const userApiError = { code: 'E404', message: 'User not found', data: null };
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse() }) // Test Update
+      .mockResolvedValueOnce({ ok: true, json: async () => userApiError });                      // User Fetch fails
+
+    await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+    expect(mockSendMail).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not retrieve user email for test ${testId}. User API Response:`, userApiError);
+  });
+
+  it('Scenario 5b: should NOT send email if user has no email', async () => {
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse() }) // Test Update
+      .mockResolvedValueOnce({ ok: true, json: async () => mockUserDetailResponse(null) });    // User Fetch, no email
+
+    await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+    expect(mockSendMail).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not retrieve user email for test ${testId}. User API Response:`, mockUserDetailResponse(null));
+  });
+
+  it('Scenario 6: should NOT send email if testResultApi.getTestResult fails', async () => {
+    const testResultError = { code: 'E400', message: 'Results not available', data: null };
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse() }) // Test Update
+      .mockResolvedValueOnce({ ok: true, json: async () => mockUserDetailResponse() })         // User Fetch
+      .mockResolvedValueOnce({ ok: true, json: async () => testResultError });                  // Test Result Fetch fails
+
+    await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+    expect(mockSendMail).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not retrieve test results for test ${testId}. Test Result API Response:`, testResultError);
+  });
+
+  it('Scenario 7: should log error if sendMail itself fails, but still return original response', async () => {
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({ ok: true, json: async () => mockSuccessfulTestUpdateResponse() }) // Test Update
+      .mockResolvedValueOnce({ ok: true, json: async () => mockUserDetailResponse() })         // User Fetch
+      .mockResolvedValueOnce({ ok: true, json: async () => mockTestResultResponse() });       // Test Result Fetch
+
+    mockSendMail.mockImplementationOnce((options, callback) => {
+      callback(new Error('SMTP server connection timed out'), null);
+    });
+
+    const result = await testApi.updateTest(testId, mockUpdateTestData(TestStatus.COMPLETED));
+    expect(result).toEqual(mockSuccessfulTestUpdateResponse()); // Original response
+    expect(mockSendMail).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(`Error sending completion email for test ${testId}:`, expect.any(Error));
+  });
+});

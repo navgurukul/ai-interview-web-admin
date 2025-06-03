@@ -1,5 +1,6 @@
 import { ApiResponse, API_BASE_URL, languageMap, difficultyMap } from './api-types';
 import { userApi } from './user-api';
+import { testResultApi } from './test-result-api';
 import * as nodemailer from 'nodemailer';
 
 // Test status enum
@@ -178,13 +179,88 @@ export const testApi = {
 
   // Update a test
   async updateTest(testId: string, testData: UpdateTestRequest): Promise<ApiResponse<Test>> {
+    const intendedStatus = testData.status; // Store intended status
     try {
       const response = await fetch(`${API_BASE_URL}/test/${testId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData),
       });
-      return await response.json();
+      const result = await response.json();
+
+      if (intendedStatus === TestStatus.COMPLETED && result.code === '00000' && result.data) {
+        const updatedTest = result.data;
+        const userId = updatedTest.user_id;
+
+        if (!userId) {
+          console.warn('User ID not found in updated test data, cannot send completion email.', { testId });
+        } else {
+          try {
+            console.log(`Attempting to send completion email for test ${testId} to user ${userId}`);
+            const userResponse = await userApi.getUserById(userId);
+            const testResultResponse = await testResultApi.getTestResult(testId);
+
+            if (userResponse.code === '00000' && userResponse.data && userResponse.data.email &&
+                testResultResponse.code === '00000' && testResultResponse.data) {
+
+              const userEmail = userResponse.data.email;
+              // Correctly map fields from TestResult interface
+              const score = testResultResponse.data.score;
+              const summary = testResultResponse.data.summary;
+              const total_questions = testResultResponse.data.question_number; // Corrected mapping
+              const correct_answers = testResultResponse.data.correct_number; // Corrected mapping
+              const elapse_time_seconds = testResultResponse.data.elapse_time; // Corrected mapping
+              const total_score = testResultResponse.data.total_score; // This was okay, maps to N/A if undefined
+
+              const transporter = nodemailer.createTransport({
+                host: 'smtp.example.com', // Placeholder
+                port: 587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+                  user: 'your-email@example.com', // Placeholder
+                  pass: 'your-password', // Placeholder
+                },
+              });
+
+              const mailOptions = {
+                from: '"Your App Name" <your-email@example.com>', // Placeholder
+                to: userEmail,
+                subject: 'Your Test Results are Ready',
+                html: `
+                  <p>Hello,</p>
+                  <p>You have completed your test. Here are your results:</p>
+                  <p><strong>Score:</strong> ${score !== undefined ? score : 'N/A'}</p>
+                  <p><strong>Summary:</strong> ${summary || 'No summary provided.'}</p>
+                  <p><strong>Total Score:</strong> ${total_score !== undefined ? total_score : 'N/A'}</p>
+                  <p><strong>Total Questions:</strong> ${total_questions !== undefined ? total_questions : 'N/A'}</p>
+                  <p><strong>Correct Answers:</strong> ${correct_answers !== undefined ? correct_answers : 'N/A'}</p>
+                  <p><strong>Time Spent:</strong> ${elapse_time_seconds !== undefined ? (elapse_time_seconds / 60).toFixed(2) + ' minutes' : 'N/A'}</p>
+                  <p>Thank you for participating.</p>
+                `,
+              };
+
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.error(`Error sending completion email for test ${testId}:`, error);
+                } else {
+                  console.log(`Completion email sent for test ${testId} to ${userEmail}:`, info.response);
+                }
+              });
+
+            } else {
+              if (userResponse.code !== '00000' || !userResponse.data || !userResponse.data.email) {
+                console.warn(`Could not retrieve user email for test ${testId}. User API Response:`, userResponse);
+              }
+              if (testResultResponse.code !== '00000' || !testResultResponse.data) {
+                console.warn(`Could not retrieve test results for test ${testId}. Test Result API Response:`, testResultResponse);
+              }
+            }
+          } catch (emailProcessError) {
+            console.error(`Error in completion email sending process for test ${testId}:`, emailProcessError);
+          }
+        }
+      }
+      return result;
     } catch (error) {
       console.error('Failed to update test:', error);
       return { code: '500', message: 'Failed to update test', data: null };
