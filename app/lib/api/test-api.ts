@@ -1,4 +1,6 @@
 import { ApiResponse, API_BASE_URL, languageMap, difficultyMap } from './api-types';
+import { userApi } from './user-api';
+import * as nodemailer from 'nodemailer';
 
 // Test status enum
 export enum TestStatus {
@@ -114,7 +116,60 @@ export const testApi = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData),
       });
-      return await response.json();
+      const result = await response.json();
+
+      if (result.code === '00000' && result.data) {
+        const { user_id, activate_code } = result.data;
+        if (user_id && activate_code) {
+          try {
+            const userResponse = await userApi.getUserById(user_id);
+            if (userResponse.code === '00000' && userResponse.data && userResponse.data.email) {
+              const userEmail = userResponse.data.email;
+              const activationLink = `https://your-frontend-app.com/activate/${activate_code}`; // Placeholder URL
+
+              const transporter = nodemailer.createTransport({
+                host: 'smtp.example.com', // Placeholder
+                port: 587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+                  user: 'your-email@example.com', // Placeholder
+                  pass: 'your-password', // Placeholder
+                },
+              });
+
+              const mailOptions = {
+                from: '"Your App Name" <your-email@example.com>', // Placeholder
+                to: userEmail,
+                subject: 'Activate Your Test',
+                html: `
+                  <p>Hello,</p>
+                  <p>Thank you for creating a test. Please activate your test using the link below:</p>
+                  <p><a href="${activationLink}">${activationLink}</a></p>
+                  <p>Your activation code is: <strong>${activate_code}</strong></p>
+                  <p>If you did not request this, please ignore this email.</p>
+                `,
+              };
+
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.error('Error sending activation email:', error);
+                } else {
+                  console.log('Activation email sent:', info.response);
+                }
+              });
+            } else if (userResponse.code !== '00000') {
+              console.error('Failed to fetch user details for email:', userResponse.message);
+            } else if (!userResponse.data || !userResponse.data.email) {
+              console.warn('User data or email not found for user_id:', user_id);
+            }
+          } catch (emailError) {
+            console.error('Error in email sending process:', emailError);
+          }
+        } else {
+          console.warn('user_id or activate_code missing in createTest response, cannot send email.');
+        }
+      }
+      return result;
     } catch (error) {
       console.error('Failed to create test:', error);
       return { code: '500', message: 'Failed to create test', data: null };
