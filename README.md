@@ -1,135 +1,101 @@
-# AI Interview Admin Management System
+# AI Interview Web Admin
 
-This is an AI Interview Admin Management System built using NextJS 15, React 19, and Ant Design.
+This is the admin dashboard for an AI-powered interviewing system. It allows for the management of jobs, questions, tests, users, and system settings.
 
-## Features
+## Key Features
 
-- **User Management**: Supports CRUD operations for users
-- **Job Management**: Supports CRUD operations for jobs
-- **Question Management**: Supports CRUD operations for questions
-- **System Settings**: Allows customization of system name, logo, theme, and language
+*   **Job Management:** Create, update, delete, and view job postings.
+*   **Question Bank:** Manage a repository of interview questions.
+*   **Test Configuration:** Create and configure tests using questions from the bank.
+*   **User Administration:** Manage users and their roles within the system.
+*   **System Settings:** Configure overall application settings.
 
-## Tech Stack
+## Technology Stack
 
-- NextJS 15 (App Router)
-- React 19
-- Ant Design
-- TypeScript
+*   **Next.js:** React framework for server-side rendering and static site generation.
+*   **React:** JavaScript library for building user interfaces.
+*   **TypeScript:** Superset of JavaScript that adds static typing.
+*   **Ant Design:** UI library for React components.
 
-## How to Run
+## Prerequisites
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+*   [Node.js](https://nodejs.org/) (LTS version recommended)
+*   [npm](https://www.npmjs.com/) (comes with Node.js) or [yarn](https://yarnpkg.com/)
 
-2. Create an environment variable file `.env.local`:
-   ```
-   NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
-   ```
+## Getting Started
 
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository_url>
+    cd ai-interview-web-admin
+    ```
+    *(Replace `<repository_url>` with the actual URL of this repository)*
 
-4. Build the production version:
-   ```bash
-   npm run build
-   ```
+2.  **Install dependencies:**
+    Using npm:
+    ```bash
+    npm install
+    ```
+    Or using yarn:
+    ```bash
+    yarn install
+    ```
 
-5. Start the production server:
-   ```bash
-   npm start
-   ```
+3.  **Set up environment variables:**
+    This project might require environment variables for configuration (e.g., API keys, database URLs). Create a `.env.local` file in the root of the project and add the necessary variables. If a `.env.example` file exists, you can copy it to `.env.local` and update the values.
+    ```bash
+    cp .env.example .env.local # If .env.example exists
+    # Then edit .env.local with your specific settings
+    ```
+    *(Note: Since no `.env.example` was observed, you will need to identify required environment variables based on the application's needs, typically for API endpoints or database connections.)*
 
-## System Overview
+4.  **Run the development server:**
+    Using npm:
+    ```bash
+    npm run dev
+    ```
+    Or using yarn:
+    ```bash
+    yarn dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000) (or the port specified in your environment) in your browser to see the application.
 
-### User Management
+## Available Scripts
 
-The User Management page provides the following features:
-- View user list
-- Add new users
-- Edit user information
-- Delete users
+In the project directory, you can run the following scripts:
 
-User attributes include:
-- Username (user_name)
-- Staff ID (staff_id)
-- Email (email)
-- Role (role): Admin (1), Regular User (2), Guest (0)
-- Status (status): Active (0), Inactive (1)
+*   `npm run dev` or `yarn dev`:
+    Runs the app in development mode.
 
-### Job Management
+*   `npm run build` or `yarn build`:
+    Builds the app for production to the `.next` folder.
 
-The Job Management page provides the following features:
-- View job list
-- Add new jobs
-- Edit job information
-- Delete jobs
+*   `npm run start` or `yarn start`:
+    Starts the production server (requires a prior build).
 
-Job attributes include:
-- Job Title (job_title)
-- Job Description (job_description)
-- Technical Skills (technical_skills)
-- Soft Skills (soft_skills)
-- Creation Date (create_date)
+*   `npm run lint` or `yarn lint`:
+    Runs ESLint to identify and fix linting issues in the codebase.
 
-### Question Management
+## Project Structure
 
-The Question Management page provides the following features:
-- View question list
-- Add new questions
-- Edit question information
-- Delete questions
+A brief overview of the key directories based on the project's setup:
 
-Question attributes include:
-- Question Content (question)
-- Reference Answer (answer)
-- Examination Points (examination_points)
-- Applicable Job (job_title)
-- Language (language): Chinese, English
-- Difficulty (difficulty): Easy, Medium, Hard
-- Question Type (type): Short Answer, Multiple Choice, Coding
+*   `ai-interview-web-admin/`
+    *   `app/`: Contains the core application code, following Next.js App Router conventions.
+        *   `api/`: API route handlers for backend functionality (e.g., managing jobs, questions, tests, users, settings).
+        *   `components/`: Reusable React components used throughout the application.
+            *   `layout/`: Components defining the overall page structure (e.g., dashboard layout).
+        *   `dashboard/`: Pages related to the admin dashboard sections (jobs, questions, tests, users, settings).
+        *   `lib/`: Utility functions, API client configurations (e.g., `api.ts`, `job-api.ts`), and data definitions.
+        *   `styles/`: Global styles and theme configurations (e.g., `hsbc-theme.css`).
+        *   `globals.css`: Global CSS styles.
+        *   `layout.tsx`: The root layout component for the application.
+        *   `page.tsx`: The main entry page of the application.
+    *   `package.json`: Lists project dependencies and scripts.
+    *   `tsconfig.json`: TypeScript compiler configuration.
+    *   `LICENSE`: Contains the license information for the project.
+    *   `.gitignore`: Specifies intentionally untracked files that Git should ignore.
 
-### System Settings
+## License
 
-The System Settings page allows administrators to:
-- Modify the system name
-- Set the system logo
-- Choose the interface theme (light, dark)
-- Select the system language (Chinese, English)
-
-## API Integration
-
-The system integrates with backend APIs to support the following operations:
-
-### User API
-- Get user list (GET /api/v1/user)
-- Get a single user (GET /api/v1/user/:id)
-- Create a user (POST /api/v1/user)
-- Update a user (PUT /api/v1/user/:id)
-- Delete a user (DELETE /api/v1/user/:id)
-
-### Job API
-- Get job list (GET /api/v1/job)
-- Get a single job (GET /api/v1/job/:id)
-- Create a job (POST /api/v1/job)
-- Update a job (PUT /api/v1/job/:id)
-- Delete a job (DELETE /api/v1/job/:id)
-
-### Question API
-- Get question list (GET /api/v1/question)
-- Get a single question (GET /api/v1/question/:id)
-- Create a question (POST /api/v1/question)
-- Update a question (PUT /api/v1/question/:id)
-- Delete a question (DELETE /api/v1/question/:id)
-
-API response format:
-```json
-{
-  "code": "0",     // 0 indicates success, other values indicate error codes
-  "message": "success",
-  "data": {}       // Response data
-}
-``` 
+This project is licensed under the terms specified in the `LICENSE` file.
