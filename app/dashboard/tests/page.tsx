@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Space, message, Tag, Select, DatePicker, InputNumber, Tooltip } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Button, Modal, Form, Input, Space, message, Tag, Select, DatePicker, InputNumber, Tooltip, Pagination } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined, EyeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { 
   Test, 
   CreateTestRequest, 
@@ -56,16 +56,13 @@ export default function TestsPage() {
   const fetchTests = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
-      const skip = (page - 1) * pageSize;
-      const response = await testApi.getTests(skip, pageSize);
-      
-      if (response.code === '0') {
+      const response = await testApi.getTests(); // No pagination params
+      if (response.code === '0' && response.data) {
         setTests(response.data || []);
-        // Assume total count is the current page data count; in real projects, total count should come from the API
         setPagination({
           ...pagination,
-          current: page,
-          total: (response.data?.length || 0) + skip,
+          current: 1,
+          total: response.data.length || 0,
         });
       } else {
         message.error(response.message || 'Failed to fetch test list');
@@ -131,9 +128,14 @@ export default function TestsPage() {
     fetchQuestions();
   }, []);
 
-  // Handle table pagination
+  // Client-side pagination logic
+  const [clientPage, setClientPage] = useState(1);
+  const clientPageSize = 10;
+  const paginatedTests = tests.slice((clientPage - 1) * clientPageSize, clientPage * clientPageSize);
+
+  // Update table change handler for client-side pagination
   const handleTableChange = (pagination: any) => {
-    fetchTests(pagination.current, pagination.pageSize);
+    setClientPage(pagination.current);
   };
 
   // Open add test modal
@@ -396,13 +398,13 @@ export default function TestsPage() {
         </Button>
       </div>
       
+      {/* Table with no built-in pagination controls */}
       <Table 
         columns={columns} 
-        dataSource={tests} 
+        dataSource={paginatedTests} 
         rowKey="test_id" 
         loading={loading}
-        pagination={pagination}
-        onChange={handleTableChange}
+        pagination={false}
         scroll={{ x: 1300 }}
         style={{ 
           borderRadius: '4px',
@@ -410,6 +412,25 @@ export default function TestsPage() {
           border: `1px solid ${HSBC_COLORS.border}`
         }}
       />
+      {/* Custom simple pagination with total pages shown separately */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16, gap: 16 }}>
+        <span style={{ color: '#888' }}>
+          Total Pages: {Math.ceil(tests.length / clientPageSize)}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button 
+            onClick={() => setClientPage(clientPage - 1)} 
+            disabled={clientPage === 1}
+            icon={<LeftOutlined />}
+          />
+          <span style={{ minWidth: 20, textAlign: 'center' }}>{clientPage}</span>
+          <Button 
+            onClick={() => setClientPage(clientPage + 1)} 
+            disabled={clientPage >= Math.ceil(tests.length / clientPageSize)}
+            icon={<RightOutlined />}
+          />
+        </div>
+      </div>
 
       <Modal
         title={currentTest ? 'Edit Test' : 'Add Test'}
@@ -564,4 +585,4 @@ export default function TestsPage() {
       </Modal>
     </div>
   );
-} 
+}

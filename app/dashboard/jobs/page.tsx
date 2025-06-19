@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Space, message, Tag } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Modal, Form, Input, Space, message, Tag, Select } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Job, CreateJobRequest, UpdateJobRequest, jobApi } from '@/app/lib/api';
-import { Select } from 'antd';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -30,23 +29,19 @@ export default function JobsPage() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentJob, setCurrentJob] = useState<Job | null>(null);
   const [form] = Form.useForm();
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+
+  // Client-side pagination
+  const [clientPage, setClientPage] = useState(1);
+  const clientPageSize = 10;
 
   // Fetch job list
-  const fetchJobs = async (page: number = 1, pageSize: number = 10) => {
+  const fetchJobs = async () => {
     setLoading(true);
     try {
-      const skip = (page - 1) * pageSize;
-      const response = await jobApi.getJobs(skip, pageSize);
-      
+      // Fetch all jobs, assuming the API supports a large limit
+      const response = await jobApi.getJobs(0, 1000);
       if (response.code === '0') {
         setJobs(response.data || []);
-        // Assuming total count is the current page data count, in real projects, total count should come from the API
-        setPagination({
-          ...pagination,
-          current: page,
-          total: (response.data?.length || 0) + skip,
-        });
       } else {
         message.error(response.message || 'Failed to fetch job list');
       }
@@ -63,10 +58,7 @@ export default function JobsPage() {
     fetchJobs();
   }, []);
 
-  // Handle table pagination
-  const handleTableChange = (pagination: any) => {
-    fetchJobs(pagination.current, pagination.pageSize);
-  };
+  const paginatedJobs = jobs.slice((clientPage - 1) * clientPageSize, clientPage * clientPageSize);
 
   // Open add job modal
   const showAddModal = () => {
@@ -112,7 +104,7 @@ export default function JobsPage() {
         if (response.code === '0') {
           message.success('Job updated successfully');
           setModalVisible(false);
-          fetchJobs(pagination.current, pagination.pageSize);
+          fetchJobs();
         } else {
           message.error(response.message || 'Failed to update job');
         }
@@ -130,7 +122,7 @@ export default function JobsPage() {
         if (response.code === '0') {
           message.success('Job created successfully');
           setModalVisible(false);
-          fetchJobs(pagination.current, pagination.pageSize);
+          fetchJobs();
         } else {
           message.error(response.message || 'Failed to create job');
         }
@@ -156,7 +148,7 @@ export default function JobsPage() {
           
           if (response.code === '0') {
             message.success('Job deleted successfully');
-            fetchJobs(pagination.current, pagination.pageSize);
+            fetchJobs();
           } else {
             message.error(response.message || 'Failed to delete job');
           }
@@ -221,18 +213,10 @@ export default function JobsPage() {
       key: 'action',
       render: (_: any, record: Job) => (
         <Space size="middle">
-          <Button 
-            type="primary" 
-            icon={<EditOutlined />} 
-            onClick={() => showEditModal(record)}
-          >
+          <Button type="primary" icon={<EditOutlined />} onClick={() => showEditModal(record)}>
             Edit
           </Button>
-          <Button 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDelete(record.job_id)}
-          >
+          <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.job_id)}>
             Delete
           </Button>
         </Space>
@@ -243,27 +227,38 @@ export default function JobsPage() {
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />} 
-          onClick={showAddModal}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={showAddModal}>
           Add Job
         </Button>
       </div>
-      
       <Table 
         columns={columns} 
-        dataSource={jobs} 
-        rowKey="job_id" 
+        dataSource={paginatedJobs} 
         loading={loading}
-        pagination={pagination}
-        onChange={handleTableChange}
+        rowKey="id"
+        pagination={false}
       />
-
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16, gap: 16 }}>
+        <span style={{ color: '#888' }}>
+          Total Pages: {Math.ceil(jobs.length / clientPageSize)}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button 
+            onClick={() => setClientPage(clientPage - 1)} 
+            disabled={clientPage === 1}
+            icon={<LeftOutlined />}
+          />
+          <span style={{ minWidth: 20, textAlign: 'center' }}>{clientPage}</span>
+          <Button 
+            onClick={() => setClientPage(clientPage + 1)} 
+            disabled={clientPage >= Math.ceil(jobs.length / clientPageSize)}
+            icon={<RightOutlined />}
+          />
+        </div>
+      </div>
       <Modal
         title={currentJob ? 'Edit Job' : 'Add Job'}
-        open={modalVisible}
+        visible={modalVisible}
         onOk={handleSubmit}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
@@ -326,4 +321,4 @@ export default function JobsPage() {
       </Modal>
     </div>
   );
-} 
+}
