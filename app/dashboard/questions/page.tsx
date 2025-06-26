@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Space, message, Tag, Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { 
   Question, 
   CreateQuestionRequest, 
@@ -33,23 +33,21 @@ export default function QuestionsPage() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [form] = Form.useForm();
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   const [jobTitles, setJobTitles] = useState<string[]>([]);
 
+  // Client-side pagination
+  const [clientPage, setClientPage] = useState(1);
+  const clientPageSize = 10;
+
   // Fetch question list
-  const fetchQuestions = async (page: number = 1, pageSize: number = 10) => {
+  const fetchQuestions = async () => {
     setLoading(true);
     try {
-      const skip = (page - 1) * pageSize;
-      const response = await questionApi.getQuestions(skip, pageSize);
+      // Fetch all questions
+      const response = await questionApi.getQuestions(0, 1000); 
       
       if (response.code === '0') {
         setQuestions(response.data || []);
-        setPagination({
-          ...pagination,
-          current: page,
-          total: (response.data?.length || 0) + skip,
-        });
       } else {
         message.error(response.message || 'Failed to fetch question list');
       }
@@ -80,10 +78,7 @@ export default function QuestionsPage() {
     fetchJobTitles();
   }, []);
 
-  // Handle table pagination
-  const handleTableChange = (pagination: any) => {
-    fetchQuestions(pagination.current, pagination.pageSize);
-  };
+  const paginatedQuestions = questions.slice((clientPage - 1) * clientPageSize, clientPage * clientPageSize);
 
   // Open add question modal
   const showAddModal = () => {
@@ -135,7 +130,7 @@ export default function QuestionsPage() {
         if (response.code === '0') {
           message.success('Question updated successfully');
           setModalVisible(false);
-          fetchQuestions(pagination.current, pagination.pageSize);
+          fetchQuestions();
         } else {
           message.error(response.message || 'Failed to update question');
         }
@@ -156,7 +151,7 @@ export default function QuestionsPage() {
         if (response.code === '0') {
           message.success('Question created successfully');
           setModalVisible(false);
-          fetchQuestions(pagination.current, pagination.pageSize);
+          fetchQuestions();
         } else {
           message.error(response.message || 'Failed to create question');
         }
@@ -182,7 +177,7 @@ export default function QuestionsPage() {
           
           if (response.code === '0') {
             message.success('Question deleted successfully');
-            fetchQuestions(pagination.current, pagination.pageSize);
+            fetchQuestions();
           } else {
             message.error(response.message || 'Failed to delete question');
           }
@@ -259,21 +254,12 @@ export default function QuestionsPage() {
     {
       title: 'Actions',
       key: 'action',
-      width: 150,
       render: (_: any, record: Question) => (
         <Space size="middle">
-          <Button 
-            type="primary" 
-            icon={<EditOutlined />} 
-            onClick={() => showEditModal(record)}
-          >
+          <Button type="primary" icon={<EditOutlined />} onClick={() => showEditModal(record)}>
             Edit
           </Button>
-          <Button 
-            danger 
-            icon={<DeleteOutlined />} 
-            onClick={() => handleDelete(record.question_id)}
-          >
+          <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.question_id)}>
             Delete
           </Button>
         </Space>
@@ -284,35 +270,38 @@ export default function QuestionsPage() {
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />} 
-          onClick={showAddModal}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={showAddModal}>
           Add Question
         </Button>
       </div>
-      
       <Table 
         columns={columns} 
-        dataSource={questions} 
-        rowKey="question_id" 
+        dataSource={paginatedQuestions} 
         loading={loading}
-        pagination={pagination}
-        onChange={handleTableChange}
-        expandable={{
-          expandedRowRender: (record) => (
-            <div style={{ margin: 0 }}>
-              <p><strong>Answer:</strong></p>
-              <p style={{ whiteSpace: 'pre-wrap' }}>{record.answer}</p>
-            </div>
-          ),
-        }}
+        rowKey="id"
+        pagination={false}
       />
-
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16, gap: 16 }}>
+        <span style={{ color: '#888' }}>
+          Total Pages: {Math.ceil(questions.length / clientPageSize)}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button 
+            onClick={() => setClientPage(clientPage - 1)} 
+            disabled={clientPage === 1}
+            icon={<LeftOutlined />}
+          />
+          <span style={{ minWidth: 20, textAlign: 'center' }}>{clientPage}</span>
+          <Button 
+            onClick={() => setClientPage(clientPage + 1)} 
+            disabled={clientPage >= Math.ceil(questions.length / clientPageSize)}
+            icon={<RightOutlined />}
+          />
+        </div>
+      </div>
       <Modal
         title={currentQuestion ? 'Edit Question' : 'Add Question'}
-        open={modalVisible}
+        visible={modalVisible}
         onOk={handleSubmit}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}

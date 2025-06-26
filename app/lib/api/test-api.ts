@@ -94,6 +94,17 @@ export const testApi = {
       return { code: '500', message: 'Failed to fetch test list', data: null };
     }
   },
+  
+  // Get paginated test list
+  async getPaginatedTests(page: number = 1, pageSize: number = 10): Promise<ApiResponse<Test[]> & {metadata?: {total_count: number, current_page: number, total_pages: number, has_next: boolean, has_previous: boolean}}> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/test/paginated/?page=${page}&page_size=${pageSize}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch paginated test list:', error);
+      return { code: '500', message: 'Failed to fetch paginated test list', data: null };
+    }
+  },
 
   // Get a single test
   async getTestById(testId: string): Promise<ApiResponse<Test>> {
