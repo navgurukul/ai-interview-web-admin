@@ -42,7 +42,11 @@ export default function TestsPage() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentTest, setCurrentTest] = useState<Test | null>(null);
   const [form] = Form.useForm();
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [totalItems, setTotalItems] = useState(0);
   
   // Data for selection
   const [users, setUsers] = useState<User[]>([]);
@@ -52,26 +56,43 @@ export default function TestsPage() {
 
   const router = useRouter();
 
-  // Fetch test list
+  // Fetch test list with pagination
   const fetchTests = async (page: number = 1, pageSize: number = 10) => {
+    console.log('🚀 === STARTING API CALL FOR TESTS ===');
+    console.log('📊 Request Parameters:', { page, pageSize });
+    
     setLoading(true);
     try {
-      const response = await testApi.getTests(); // No pagination params
+      console.log('🌐 Making API call to testApi.getPaginatedTests...');
+      const response = await testApi.getPaginatedTests(page, pageSize);
+      
+      console.log('✅ === BACKEND RESPONSE RECEIVED ===');
+      console.log('📦 Full Response Object:', response);
+      
       if (response.code === '0' && response.data) {
+        // Data is now directly in response.data (array of tests)
         setTests(response.data || []);
-        setPagination({
-          ...pagination,
-          current: 1,
-          total: response.data.length || 0,
-        });
+        
+        // Metadata is in a separate metadata object
+        if (response.metadata) {
+          setTotalItems(response.metadata.total_count || 0);
+          console.log('✅ Total count from metadata:', response.metadata.total_count);
+          console.log('✅ Current page:', response.metadata.current_page);
+          console.log('✅ Total pages:', response.metadata.total_pages);
+        }
+        
+        console.log('✅ Tests set in state successfully');
       } else {
+        console.error('❌ API returned error code:', response.code);
         message.error(response.message || 'Failed to fetch test list');
       }
     } catch (error) {
+      console.error('💥 === API CALL ERROR ===');
+      console.error('Error object:', error);
       message.error('Failed to fetch test list');
-      console.error(error);
     } finally {
       setLoading(false);
+      console.log('🏁 === API CALL COMPLETED ===');
     }
   };
 
@@ -122,11 +143,25 @@ export default function TestsPage() {
 
   // Initial load
   useEffect(() => {
-    fetchTests();
+    fetchTests(currentPage, pageSize);
     fetchUsers();
     fetchJobs();
     fetchQuestions();
-  }, []);
+  }, [currentPage]);  // Re-fetch when page changes
+
+  // Handle page change
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    const totalPages = Math.ceil(totalItems / pageSize);
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   // Client-side pagination logic
   const [clientPage, setClientPage] = useState(1);
@@ -209,11 +244,10 @@ export default function TestsPage() {
         // Create test
         response = await testApi.createTest(testData);
       }
-      
-      if (response.code === '0') {
+        if (response.code === '0') {
         message.success(currentTest ? 'Test updated successfully' : 'Test created successfully');
         setModalVisible(false);
-        fetchTests(pagination.current, pagination.pageSize);
+        fetchTests(currentPage, pageSize);
       } else {
         message.error(response.message || (currentTest ? 'Failed to update test' : 'Failed to create test'));
       }
@@ -223,7 +257,6 @@ export default function TestsPage() {
       setConfirmLoading(false);
     }
   };
-
   // Delete test
   const handleDelete = async (testId: string) => {
     Modal.confirm({
@@ -237,7 +270,7 @@ export default function TestsPage() {
           const response = await testApi.deleteTest(testId);
           if (response.code === '0') {
             message.success('Test deleted successfully');
-            fetchTests(pagination.current, pagination.pageSize);
+            fetchTests(currentPage, pageSize);
           } else {
             message.error(response.message || 'Failed to delete test');
           }
@@ -397,11 +430,10 @@ export default function TestsPage() {
           Add Test
         </Button>
       </div>
-      
-      {/* Table with no built-in pagination controls */}
+        {/* Table with no built-in pagination controls */}
       <Table 
         columns={columns} 
-        dataSource={paginatedTests} 
+        dataSource={tests} 
         rowKey="test_id" 
         loading={loading}
         pagination={false}
@@ -412,21 +444,21 @@ export default function TestsPage() {
           border: `1px solid ${HSBC_COLORS.border}`
         }}
       />
-      {/* Custom simple pagination with total pages shown separately */}
+      {/* Custom pagination controls */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16, gap: 16 }}>
         <span style={{ color: '#888' }}>
-          Total Pages: {Math.ceil(tests.length / clientPageSize)}
+          Page {currentPage} of {Math.ceil(totalItems / pageSize)} | Total Tests: {totalItems}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Button 
-            onClick={() => setClientPage(clientPage - 1)} 
-            disabled={clientPage === 1}
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
             icon={<LeftOutlined />}
           />
-          <span style={{ minWidth: 20, textAlign: 'center' }}>{clientPage}</span>
+          <span style={{ minWidth: 20, textAlign: 'center' }}>{currentPage}</span>
           <Button 
-            onClick={() => setClientPage(clientPage + 1)} 
-            disabled={clientPage >= Math.ceil(tests.length / clientPageSize)}
+            onClick={handleNextPage}
+            disabled={currentPage >= Math.ceil(totalItems / pageSize)}
             icon={<RightOutlined />}
           />
         </div>
