@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { API_BASE_URL } from '@/app/lib/api/api-types';
 
 // Proxy to backend API
 export async function GET(request: Request) {
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
   const limit = searchParams.get('limit') || '10';
   
   try {
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/job?skip=${skip}&limit=${limit}`);
+    const response = await fetch(`${API_BASE_URL}/api/v1/job?skip=${skip}&limit=${limit}`);
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const jobData = await request.json();
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/job`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/job`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(jobData),

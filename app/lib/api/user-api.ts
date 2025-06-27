@@ -59,7 +59,7 @@ export const userApi = {
   
   async getUsers(skip: number = 0, limit: number = 10): Promise<ApiResponse<User[]>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/user?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/user?skip=${skip}&limit=${limit}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch user list:', error);
@@ -70,7 +70,7 @@ export const userApi = {
   // Get single user
   async getUserById(userId: string): Promise<ApiResponse<User>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/user/${userId}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch user details:', error);
@@ -81,7 +81,7 @@ export const userApi = {
   // Create user
   async createUser(userData: CreateUserRequest): Promise<ApiResponse<User>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/user`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -96,7 +96,7 @@ export const userApi = {
   // Update user
   async updateUser(userId: string, userData: UpdateUserRequest): Promise<ApiResponse<User>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/user/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -111,7 +111,7 @@ export const userApi = {
   // Delete user
   async deleteUser(userId: string): Promise<ApiResponse<{ deleted: boolean }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/user/${userId}`, {
         method: 'DELETE',
       });
       return await response.json();

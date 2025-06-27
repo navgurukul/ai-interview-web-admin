@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
+import { API_BASE_URL } from '@/app/lib/api/api-types';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/job/${params.id}`);
+    const response = await fetch(`${API_BASE_URL}/api/v1/job/${params.id}`);
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
@@ -22,7 +23,7 @@ export async function PUT(
 ) {
   try {
     const jobData = await request.json();
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/job/${params.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/job/${params.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(jobData),
@@ -42,7 +43,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/job/${params.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/job/${params.id}`, {
       method: 'DELETE',
     });
     const data = await response.json();

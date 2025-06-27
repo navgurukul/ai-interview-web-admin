@@ -6,8 +6,7 @@ export interface ApiResponse<T> {
 }
 
 // API Base URL
-
-export const API_BASE_URL = 'https://interview.ai.navgurukul.org/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ng-ai-interview-server.onrender.com';
 
 
 // Language Map

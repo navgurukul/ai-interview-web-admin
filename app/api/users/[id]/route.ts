@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ng-ai-interview-server.onrender.com';
+
 // Get a single user
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/user/${params.id}`);
+    const response = await fetch(`${API_BASE_URL}/api/v1/user/${params.id}`);
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
@@ -24,7 +26,7 @@ export async function PUT(
 ) {
   try {
     const userData = await request.json();
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/user/${params.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/user/${params.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -45,7 +47,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`https://interview.ai.navgurukul.org/api/v1/user/${params.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/user/${params.id}`, {
       method: 'DELETE',
     });
     const data = await response.json();
