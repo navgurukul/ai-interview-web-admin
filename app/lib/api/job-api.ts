@@ -36,11 +36,18 @@ export const jobApi = {
       // Mocking metadata as backend doesn't provide it for this endpoint
       const result: ApiResponse<Job[]> = await response.json();
       if (result.code === '0' && result.data) {
+        const fetchedItemsCount = result.data.length;
+        let total_count = skip + fetchedItemsCount;
+        if (fetchedItemsCount === pageSize) {
+          // If we fetched a full page, assume there's at least one more item to simulate more pages.
+          // The real API should provide the true total_count.
+          total_count += 1;
+        }
         result.metadata = {
-          total_count: result.data.length + skip, // This is an assumption, actual total should come from API
+          total_count: total_count,
           current_page: page,
-          total_pages: Math.ceil((result.data.length + skip) / pageSize), // Assumption
-          has_next: (result.data.length + skip) > page * pageSize, // Assumption
+          total_pages: Math.ceil(total_count / pageSize),
+          has_next: total_count > page * pageSize,
           has_previous: page > 1,
         };
       }
