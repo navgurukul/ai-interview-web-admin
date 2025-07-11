@@ -94,7 +94,7 @@ export default function SettingsPage() {
         >
           <Select>
             <Select.Option value="en">English</Select.Option>
-            <Select.Option value="zh">Chinese</Select.Option>
+            <Select.Option value="hi">Hindi</Select.Option>
           </Select>
         </Form.Item>
 

@@ -83,7 +83,7 @@ export interface SystemSettings {
   siteName: string;
   logo: string;
   theme: 'light' | 'dark';
-  language: 'zh' | 'en';
+  language: 'hi' | 'en';
 }
 
 // Default system settings
@@ -91,7 +91,7 @@ let systemSettings: SystemSettings = {
   siteName: 'AI Interview System',
   logo: '/logo.png',
   theme: 'light',
-  language: 'zh',
+  language: 'hi',
 };
 
 // Get system settings

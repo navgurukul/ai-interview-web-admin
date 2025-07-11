@@ -595,7 +595,7 @@ export default function TestsPage() {
               style={{ flex: 1 }}
             >
               <Select placeholder="Select language">
-                <Option value="Chinese">Chinese</Option>
+                <Option value="Hindi">Hindi</Option>
                 <Option value="English">English</Option>
               </Select>
             </Form.Item>
