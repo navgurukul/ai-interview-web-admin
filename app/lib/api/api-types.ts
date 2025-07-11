@@ -1,8 +1,17 @@
 // API Response Type
+export interface PaginationMetadata {
+  total_count: number;
+  current_page: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+}
+
 export interface ApiResponse<T> {
   code: string;
   message: string;
   data: T | null;
+  metadata?: PaginationMetadata;
 }
 
 // API Base URL

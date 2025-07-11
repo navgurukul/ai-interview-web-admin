@@ -18,16 +18,14 @@ export default function UsersPage() {
   const fetchUsers = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
-      const skip = (page - 1) * pageSize;
-      const response = await userApi.getUsers(skip, pageSize);
+      const response = await userApi.getUsers(page, pageSize);
       
-      if (response.code === '0') {
-        setUsers(response.data || []);
-        // Assume total count is the current page data count; in real projects, total count should come from the API
+      if (response.code === '0' && response.data) {
+        setUsers(response.data);
         setPagination({
-          ...pagination,
-          current: page,
-          total: (response.data?.length || 0) + skip,
+          current: response.metadata?.current_page || page,
+          pageSize: pageSize,
+          total: response.metadata?.total_count || 0,
         });
       } else {
         message.error(response.message || 'Failed to fetch user list');

@@ -29,10 +29,22 @@ export interface UpdateJobRequest {
 // Job API
 export const jobApi = {
   // Get job list
-  async getJobs(skip: number = 0, limit: number = 10): Promise<ApiResponse<Job[]>> {
+  async getJobs(page: number = 1, pageSize: number = 10): Promise<ApiResponse<Job[]>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/job?skip=${skip}&limit=${limit}`);
-      return await response.json();
+      const skip = (page - 1) * pageSize;
+      const response = await fetch(`${API_BASE_URL}/job?skip=${skip}&limit=${pageSize}`);
+      // Mocking metadata as backend doesn't provide it for this endpoint
+      const result: ApiResponse<Job[]> = await response.json();
+      if (result.code === '0' && result.data) {
+        result.metadata = {
+          total_count: result.data.length + skip, // This is an assumption, actual total should come from API
+          current_page: page,
+          total_pages: Math.ceil((result.data.length + skip) / pageSize), // Assumption
+          has_next: (result.data.length + skip) > page * pageSize, // Assumption
+          has_previous: page > 1,
+        };
+      }
+      return result;
     } catch (error) {
       console.error('Failed to fetch job list:', error);
       return { code: '500', message: 'Failed to fetch job list', data: null };
