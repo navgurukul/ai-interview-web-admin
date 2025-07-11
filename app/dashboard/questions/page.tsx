@@ -34,20 +34,21 @@ export default function QuestionsPage() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [form] = Form.useForm();
   const [jobTitles, setJobTitles] = useState<string[]>([]);
-
-  // Client-side pagination
-  const [clientPage, setClientPage] = useState(1);
-  const clientPageSize = 10;
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
   // Fetch question list
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
-      // Fetch all questions
-      const response = await questionApi.getQuestions(0, 1000); 
+      const response = await questionApi.getQuestions(page, pageSize);
       
-      if (response.code === '0') {
-        setQuestions(response.data || []);
+      if (response.code === '0' && response.data) {
+        setQuestions(response.data);
+        setPagination({
+          current: response.metadata?.current_page || page,
+          pageSize: pageSize,
+          total: response.metadata?.total_count || 0,
+        });
       } else {
         message.error(response.message || 'Failed to fetch question list');
       }
@@ -74,11 +75,14 @@ export default function QuestionsPage() {
 
   // Initial load
   useEffect(() => {
-    fetchQuestions();
+    fetchQuestions(pagination.current, pagination.pageSize);
     fetchJobTitles();
   }, []);
 
-  const paginatedQuestions = questions.slice((clientPage - 1) * clientPageSize, clientPage * clientPageSize);
+  // Handle table pagination
+  const handleTableChange = (newPagination: any) => {
+    fetchQuestions(newPagination.current, newPagination.pageSize);
+  };
 
   // Open add question modal
   const showAddModal = () => {
@@ -130,7 +134,7 @@ export default function QuestionsPage() {
         if (response.code === '0') {
           message.success('Question updated successfully');
           setModalVisible(false);
-          fetchQuestions();
+          fetchQuestions(pagination.current, pagination.pageSize);
         } else {
           message.error(response.message || 'Failed to update question');
         }
@@ -151,7 +155,7 @@ export default function QuestionsPage() {
         if (response.code === '0') {
           message.success('Question created successfully');
           setModalVisible(false);
-          fetchQuestions();
+          fetchQuestions(pagination.current, pagination.pageSize);
         } else {
           message.error(response.message || 'Failed to create question');
         }
@@ -177,7 +181,7 @@ export default function QuestionsPage() {
           
           if (response.code === '0') {
             message.success('Question deleted successfully');
-            fetchQuestions();
+            fetchQuestions(pagination.current, pagination.pageSize);
           } else {
             message.error(response.message || 'Failed to delete question');
           }
@@ -276,29 +280,12 @@ export default function QuestionsPage() {
       </div>
       <Table 
         columns={columns} 
-        dataSource={paginatedQuestions} 
+        dataSource={questions}
         loading={loading}
-        rowKey="id"
-        pagination={false}
+        rowKey="question_id"
+        pagination={pagination}
+        onChange={handleTableChange}
       />
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16, gap: 16 }}>
-        <span style={{ color: '#888' }}>
-          Total Pages: {Math.ceil(questions.length / clientPageSize)}
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Button 
-            onClick={() => setClientPage(clientPage - 1)} 
-            disabled={clientPage === 1}
-            icon={<LeftOutlined />}
-          />
-          <span style={{ minWidth: 20, textAlign: 'center' }}>{clientPage}</span>
-          <Button 
-            onClick={() => setClientPage(clientPage + 1)} 
-            disabled={clientPage >= Math.ceil(questions.length / clientPageSize)}
-            icon={<RightOutlined />}
-          />
-        </div>
-      </div>
       <Modal
         title={currentQuestion ? 'Edit Question' : 'Add Question'}
         visible={modalVisible}

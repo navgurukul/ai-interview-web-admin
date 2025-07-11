@@ -29,19 +29,20 @@ export default function JobsPage() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentJob, setCurrentJob] = useState<Job | null>(null);
   const [form] = Form.useForm();
-
-  // Client-side pagination
-  const [clientPage, setClientPage] = useState(1);
-  const clientPageSize = 10;
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
   // Fetch job list
-  const fetchJobs = async () => {
+  const fetchJobs = async (page: number = 1, pageSize: number = 10) => {
     setLoading(true);
     try {
-      // Fetch all jobs, assuming the API supports a large limit
-      const response = await jobApi.getJobs(0, 1000);
-      if (response.code === '0') {
-        setJobs(response.data || []);
+      const response = await jobApi.getJobs(page, pageSize);
+      if (response.code === '0' && response.data) {
+        setJobs(response.data);
+        setPagination({
+          current: response.metadata?.current_page || page,
+          pageSize: pageSize,
+          total: response.metadata?.total_count || 0,
+        });
       } else {
         message.error(response.message || 'Failed to fetch job list');
       }
@@ -55,10 +56,13 @@ export default function JobsPage() {
 
   // Initial load
   useEffect(() => {
-    fetchJobs();
+    fetchJobs(pagination.current, pagination.pageSize);
   }, []);
 
-  const paginatedJobs = jobs.slice((clientPage - 1) * clientPageSize, clientPage * clientPageSize);
+  // Handle table pagination
+  const handleTableChange = (newPagination: any) => {
+    fetchJobs(newPagination.current, newPagination.pageSize);
+  };
 
   // Open add job modal
   const showAddModal = () => {
@@ -104,7 +108,7 @@ export default function JobsPage() {
         if (response.code === '0') {
           message.success('Job updated successfully');
           setModalVisible(false);
-          fetchJobs();
+          fetchJobs(pagination.current, pagination.pageSize);
         } else {
           message.error(response.message || 'Failed to update job');
         }
@@ -122,7 +126,7 @@ export default function JobsPage() {
         if (response.code === '0') {
           message.success('Job created successfully');
           setModalVisible(false);
-          fetchJobs();
+          fetchJobs(pagination.current, pagination.pageSize);
         } else {
           message.error(response.message || 'Failed to create job');
         }
@@ -148,7 +152,7 @@ export default function JobsPage() {
           
           if (response.code === '0') {
             message.success('Job deleted successfully');
-            fetchJobs();
+            fetchJobs(pagination.current, pagination.pageSize);
           } else {
             message.error(response.message || 'Failed to delete job');
           }
@@ -233,29 +237,12 @@ export default function JobsPage() {
       </div>
       <Table 
         columns={columns} 
-        dataSource={paginatedJobs} 
+        dataSource={jobs}
         loading={loading}
-        rowKey="id"
-        pagination={false}
+        rowKey="job_id"
+        pagination={pagination}
+        onChange={handleTableChange}
       />
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16, gap: 16 }}>
-        <span style={{ color: '#888' }}>
-          Total Pages: {Math.ceil(jobs.length / clientPageSize)}
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Button 
-            onClick={() => setClientPage(clientPage - 1)} 
-            disabled={clientPage === 1}
-            icon={<LeftOutlined />}
-          />
-          <span style={{ minWidth: 20, textAlign: 'center' }}>{clientPage}</span>
-          <Button 
-            onClick={() => setClientPage(clientPage + 1)} 
-            disabled={clientPage >= Math.ceil(jobs.length / clientPageSize)}
-            icon={<RightOutlined />}
-          />
-        </div>
-      </div>
       <Modal
         title={currentJob ? 'Edit Job' : 'Add Job'}
         visible={modalVisible}
