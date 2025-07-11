@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Layout, Menu, theme } from 'antd';
-import { UserOutlined, SettingOutlined, ProfileOutlined, QuestionCircleOutlined, FileTextOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined, ProfileOutlined, QuestionCircleOutlined, FileTextOutlined, SolutionOutlined } from '@ant-design/icons'; // Added SolutionOutlined
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,6 +10,11 @@ const { Header, Content, Sider } = Layout;
 
 // Define sidebar menu items
 const menuItems = [
+  {
+    key: 'student-details', // New key for student details
+    icon: <SolutionOutlined />, // New icon (example, can be changed)
+    label: <Link href="/dashboard/student-details">Student Details</Link>, // Link to the new page
+  },
   {
     key: 'users',
     icon: <UserOutlined />,
