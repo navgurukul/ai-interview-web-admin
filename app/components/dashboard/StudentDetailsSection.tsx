@@ -5,15 +5,34 @@ import { Table, Spin, Alert, Typography } from 'antd'; // Using Ant Design compo
 
 const { Title } = Typography;
 
-// Basic interface for student data (adjust based on actual API response)
+interface StudentName {
+  prefix: string;
+  last_name: string;
+  suffix: string;
+  first_name: string;
+  zc_display_value: string;
+}
+
+interface SelectCampus {
+  Campus_Name: string;
+  ID: string;
+  zc_display_value: string;
+}
+
+// Updated Student interface based on the provided JSON structure
 interface Student {
-  id: string | number; // Assuming 'id' or another unique field like 'email' will be available
-  name: string;
-  email: string;
-  // Add other relevant fields based on the Zoho API response
-  // e.g., Zoho_ID, Full_Name, Mobile, Gender, Date_of_Birth, Current_Status etc.
-  // It's crucial to inspect the actual API response to populate this correctly.
-  [key: string]: any; // Allow other properties
+  ID: string; // Primary unique identifier
+  Name: StudentName; // Will be an object
+  Navgurukul_Email: string | null; // Can be null or empty
+  Phone_Number: string | null;
+  Status: string | null;
+  Joining_Date: string | null; // Consider converting to Date object if needed for sorting/formatting
+  Aadhar_No?: string | null;
+  Select_Campus?: SelectCampus; // This is an object
+  Qualification?: string | null;
+  Caste?: string | null;
+  // Include other fields as needed, marking them as optional if they might be missing
+  [key: string]: any;
 }
 
 // The API URL is now internal, pointing to our Next.js API route
@@ -34,52 +53,61 @@ const StudentDetailsSection: React.FC = () => {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
-            // No Authorization header needed here, as it's handled by the API route
           },
         });
 
-        const data = await response.json(); // Always try to parse JSON first
+        const responseData = await response.json();
 
         if (!response.ok) {
-          // 'data' might contain the error message from our API route if parsing was successful
-          const errorMessage = data?.message || `Failed to fetch student data: ${response.status} ${response.statusText}`;
-          console.error('API Error Data:', data);
+          const errorMessage = responseData?.message || `Failed to fetch student data: ${response.status} ${response.statusText}`;
+          console.error('API Error Data:', responseData);
           throw new Error(errorMessage);
         }
 
-        console.log('Raw API Data (from internal route):', data); // Log raw data to inspect its structure
+        console.log('Raw API Data (from internal route):', responseData);
 
-        // IMPORTANT: Adjust data mapping based on the actual API response structure
-        // The API might return data directly as an array, or nested under a key like 'data', 'result', 'students' etc.
-        // It might also not match the 'Student' interface directly.
         let studentList: Student[] = [];
-        if (Array.isArray(data)) {
-          studentList = data.map((item: any, index: number) => ({
-            id: item.ID || item.id || item.Zoho_ID || `temp-id-${index}`, // Use a unique identifier, Zoho_ID or ID is common
-            name: item.Full_Name || item.name || 'N/A',
-            email: item.Email || item.email || 'N/A',
-            // Map other fields here, ensuring they exist in 'item'
-            ...item, // include all other fields from the item
-          }));
-        } else if (data && Array.isArray(data.data)) { // Example if data is under a 'data' key
-           studentList = data.data.map((item: any, index: number) => ({
-            id: item.ID || item.id || item.Zoho_ID || `temp-id-${index}`,
-            name: item.Full_Name || item.name || 'N/A',
-            email: item.Email || item.email || 'N/A',
+        // Expecting data under the "Data" key as per the provided JSON
+        if (responseData && Array.isArray(responseData.Data)) {
+          studentList = responseData.Data.map((item: any): Student => ({
+            // Explicitly map fields to the Student interface
+            ID: item.ID || `temp-id-${Math.random()}`, // Ensure ID is always present
+            Name: item.Name || { prefix: "", last_name: "N/A", suffix: "", first_name: "N/A", zc_display_value: 'N/A' },
+            Navgurukul_Email: item.Navgurukul_Email || null,
+            Phone_Number: item.Phone_Number || null,
+            Status: item.Status || null,
+            Joining_Date: item.Joining_Date || null,
+            Aadhar_No: item.Aadhar_No || null,
+            Select_Campus: item.Select_Campus || { Campus_Name: "N/A", ID: "", zc_display_value: "N/A" },
+            Qualification: item.Qualification || null,
+            Caste: item.Caste || null,
+            // Spread remaining item properties
             ...item,
           }));
-        } else if (data && Array.isArray(data.students)) { // Example if data is under a 'students' key
-           studentList = data.students.map((item: any, index: number) => ({
-            id: item.ID || item.id || item.Zoho_ID || `temp-id-${index}`,
-            name: item.Full_Name || item.name || 'N/A',
-            email: item.Email || item.email || 'N/A',
-            ...item,
-          }));
-        } else {
-          // This case should ideally be handled by the API route returning an error if the external data is malformed.
-          // However, adding a fallback here in the client is good for robustness.
-          console.error('Unexpected API response structure from internal route:', data);
-          setError(data?.message || 'Fetched data is not in the expected format.');
+        } else if (responseData && Array.isArray(responseData.students)) { // Fallback if the key was 'students'
+            studentList = responseData.students.map((item: any): Student => ({
+              ID: item.ID || `temp-id-${Math.random()}`,
+              Name: item.Name || { prefix: "", last_name: "N/A", suffix: "", first_name: "N/A", zc_display_value: 'N/A' },
+              Navgurukul_Email: item.Navgurukul_Email || null,
+              Phone_Number: item.Phone_Number || null,
+              Status: item.Status || null,
+              Joining_Date: item.Joining_Date || null,
+              ...item,
+            }));
+        } else if (Array.isArray(responseData)) { // Fallback if data is a direct array
+            studentList = responseData.map((item: any): Student => ({
+                ID: item.ID || `temp-id-${Math.random()}`,
+                Name: item.Name || { prefix: "", last_name: "N/A", suffix: "", first_name: "N/A", zc_display_value: 'N/A' },
+                Navgurukul_Email: item.Navgurukul_Email || null,
+                Phone_Number: item.Phone_Number || null,
+                Status: item.Status || null,
+                Joining_Date: item.Joining_Date || null,
+                ...item,
+            }));
+        }
+        else {
+          console.error('Fetched data.Data is not an array or is missing, and no fallback matched:', responseData);
+          setError(responseData?.message || 'Fetched data is not in the expected array format.');
         }
         setStudents(studentList);
       } catch (err) {
