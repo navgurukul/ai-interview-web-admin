@@ -185,7 +185,8 @@ export default function TestsPage() {
     setCurrentTest(test);
     form.setFieldsValue({
       ...test,
-      user_id: test.user_id,
+      // If editing, pre-fill user_ids as an array with the existing user_id
+      user_ids: test.user_id ? [test.user_id] : [],
       job_id: test.job_id,
       type: test.type,
       language: test.language,
@@ -223,9 +224,11 @@ export default function TestsPage() {
       
       const [start_date, expire_date] = values.date_range;
       
-      const testData = {
+      // Prepare testData, using user_ids for new/updated tests
+      // The backend will handle if it's a single user_id within the array or multiple
+      const testData: CreateTestRequest = {
         job_id: values.job_id,
-        user_id: values.user_id,
+        user_ids: values.user_ids, // Pass as an array
         type: values.type,
         language: values.language,
         difficulty: values.difficulty,
@@ -238,13 +241,17 @@ export default function TestsPage() {
       
       let response;
       if (currentTest) {
-        // Update test
-        response = await testApi.updateTest(currentTest.test_id, testData);
+        // Update test: Create a new object for updateData based on UpdateTestRequest
+        // Exclude user_ids and user_id from update payload, assuming user assignment cannot be changed via edit.
+        // Or, if user can be changed to another single user, ensure only user_id (singular) is sent.
+        // For simplicity here, let's assume user cannot be changed on edit.
+        const { user_ids, user_id, ...updatePayload } = testData; // remove user_ids and user_id
+        response = await testApi.updateTest(currentTest.test_id, updatePayload as UpdateTestRequest);
       } else {
-        // Create test
+        // Create test - testData is already CreateTestRequest
         response = await testApi.createTest(testData);
       }
-        if (response.code === '0') {
+        if (response.code === '0' || (response.code === '201' && !currentTest) || (response.code === '207' && !currentTest)) { // 201 for create, 207 for partial bulk create
         message.success(currentTest ? 'Test updated successfully' : 'Test created successfully');
         setModalVisible(false);
         fetchTests(currentPage, pageSize);
@@ -499,19 +506,21 @@ export default function TestsPage() {
           </Form.Item>
           
           <Form.Item
-            name="user_id"
-            label="Select User"
-            rules={[{ required: true, message: 'Please select a user' }]}
+            name="user_ids" // Changed from user_id to user_ids
+            label="Select User(s)" // Label updated
+            rules={[{ required: true, message: 'Please select at least one user' }]}
           >
-            <Select 
-              placeholder="Select a user" 
+            <Select
+              mode="multiple" // Enabled multiple selection
+              placeholder="Select one or more users"
               showSearch
+              allowClear
               filterOption={(input, option) =>
                 (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
               }
             >
               {users.map(user => (
-                <Option key={user.user_id} value={user.user_id}>{user.user_name}</Option>
+                <Option key={user.user_id} value={user.user_id}>{user.user_name} ({user.email})</Option>
               ))}
             </Select>
           </Form.Item>

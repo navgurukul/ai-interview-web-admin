@@ -56,7 +56,8 @@ export interface Test {
 // Create test request type
 export interface CreateTestRequest {
   job_id: string;
-  user_id: string;
+  user_id?: string; // Optional for bulk creation
+  user_ids?: string[]; // Optional for single creation or when using user_id
   type: string;
   language: string;
   difficulty: string;
