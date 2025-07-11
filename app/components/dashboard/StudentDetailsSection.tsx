@@ -16,8 +16,8 @@ interface Student {
   [key: string]: any; // Allow other properties
 }
 
-const API_URL = 'https://ghar-dev.navgurukul.org/get/zoho/students?min_value=1&max_value=500';
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3VyYWpzYWhhbmlAbmF2Z3VydWt1bC5vcmciLCJpYXQiOjE3NTIyNDQ0ODcsImV4cCI6MTc2MDAyMDQ4N30.GTcACuZ_zhAiZ8762qyTKDJbgJKPT7lSVenbjKjAGEg';
+// The API URL is now internal, pointing to our Next.js API route
+const INTERNAL_API_URL = '/api/ghar-students';
 
 const StudentDetailsSection: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
@@ -29,22 +29,25 @@ const StudentDetailsSection: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(API_URL, {
+        // Fetch from the internal API route
+        const response = await fetch(INTERNAL_API_URL, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
-            'Authorization': AUTH_TOKEN,
+            // No Authorization header needed here, as it's handled by the API route
           },
         });
 
+        const data = await response.json(); // Always try to parse JSON first
+
         if (!response.ok) {
-          const errorBody = await response.text();
-          console.error('API Error Body:', errorBody);
-          throw new Error(`Failed to fetch student data: ${response.status} ${response.statusText}`);
+          // 'data' might contain the error message from our API route if parsing was successful
+          const errorMessage = data?.message || `Failed to fetch student data: ${response.status} ${response.statusText}`;
+          console.error('API Error Data:', data);
+          throw new Error(errorMessage);
         }
 
-        const data = await response.json();
-        console.log('Raw API Data:', data); // Log raw data to inspect its structure
+        console.log('Raw API Data (from internal route):', data); // Log raw data to inspect its structure
 
         // IMPORTANT: Adjust data mapping based on the actual API response structure
         // The API might return data directly as an array, or nested under a key like 'data', 'result', 'students' etc.
@@ -73,8 +76,10 @@ const StudentDetailsSection: React.FC = () => {
             ...item,
           }));
         } else {
-          console.error('Unexpected API response structure:', data);
-          setError('Fetched data is not in the expected format.');
+          // This case should ideally be handled by the API route returning an error if the external data is malformed.
+          // However, adding a fallback here in the client is good for robustness.
+          console.error('Unexpected API response structure from internal route:', data);
+          setError(data?.message || 'Fetched data is not in the expected format.');
         }
         setStudents(studentList);
       } catch (err) {
