@@ -88,7 +88,7 @@ Question attributes include:
 - Reference Answer (answer)
 - Examination Points (examination_points)
 - Applicable Job (job_title)
-- Language (language): Chinese, English
+- Language (language): Hindi, English
 - Difficulty (difficulty): Easy, Medium, Hard
 - Question Type (type): Short Answer, Multiple Choice, Coding
 
@@ -98,7 +98,7 @@ The System Settings page allows administrators to:
 - Modify the system name
 - Set the system logo
 - Choose the interface theme (light, dark)
-- Select the system language (Chinese, English)
+- Select the system language (Hindi, English)
 
 ## API Integration
 

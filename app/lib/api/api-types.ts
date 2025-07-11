@@ -21,7 +21,7 @@ export const API_BASE_URL = 'https://interview.ai.navgurukul.org/api/v1';
 
 // Language Map
 export const languageMap: Record<string, string> = {
-  'Chinese': 'Chinese',
+  'Hindi': 'Hindi',
   'English': 'English'
 };
 
