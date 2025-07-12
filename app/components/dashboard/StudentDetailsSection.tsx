@@ -29,6 +29,7 @@ interface Student {
   Joining_Date: string | null; // Consider converting to Date object if needed for sorting/formatting
   Aadhar_No?: string | null;
   Select_Campus?: SelectCampus; // This is an object
+  Select_School1?: string | null; // Added for the school name
   Qualification?: string | null;
   Caste?: string | null;
   // Include other fields as needed, marking them as optional if they might be missing
@@ -79,6 +80,7 @@ const StudentDetailsSection: React.FC = () => {
             Joining_Date: item.Joining_Date || null,
             Aadhar_No: item.Aadhar_No || null,
             Select_Campus: item.Select_Campus || { Campus_Name: "N/A", ID: "", zc_display_value: "N/A" },
+            Select_School1: item.Select_School1 || null,
             Qualification: item.Qualification || null,
             Caste: item.Caste || null,
             // Spread remaining item properties
@@ -152,6 +154,14 @@ const StudentDetailsSection: React.FC = () => {
       render: (campus: SelectCampus) => campus?.Campus_Name || 'N/A',
       sorter: (a: Student, b: Student) =>
         (a.Select_Campus?.Campus_Name || '').localeCompare(b.Select_Campus?.Campus_Name || ''),
+    },
+    {
+      title: 'School',
+      dataIndex: 'Select_School1',
+      key: 'school',
+      render: (school: string | null) => school || 'N/A',
+      sorter: (a: Student, b: Student) =>
+        (a.Select_School1 || '').localeCompare(b.Select_School1 || ''),
     },
   ];
 
