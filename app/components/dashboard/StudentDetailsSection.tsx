@@ -166,14 +166,6 @@ const StudentDetailsSection: React.FC = () => {
   ];
 
 
-  if (loading) {
-    return <Spin tip="Loading student details..." size="large"><div style={{ padding: 50, background: 'rgba(0, 0, 0, 0.05)', borderRadius: 4 }} /></Spin>;
-  }
-
-  if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />;
-  }
-
   const campusOptions = useMemo(() => {
     const campuses = new Set(allStudents.map(student => student.Select_Campus?.Campus_Name).filter(Boolean));
     return Array.from(campuses).sort();
@@ -222,6 +214,14 @@ const StudentDetailsSection: React.FC = () => {
       return campusMatch && schoolMatch;
     });
   }, [allStudents, selectedCampus, selectedSchool]);
+
+  if (loading) {
+    return <Spin tip="Loading student details..." size="large"><div style={{ padding: 50, background: 'rgba(0, 0, 0, 0.05)', borderRadius: 4 }} /></Spin>;
+  }
+
+  if (error) {
+    return <Alert message="Error" description={error} type="error" showIcon />;
+  }
 
   return (
     <div style={{ padding: '20px' }}>
