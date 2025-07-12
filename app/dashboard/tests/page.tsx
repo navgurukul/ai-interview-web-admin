@@ -438,14 +438,22 @@ export default function TestsPage() {
         </Button>
       </div>
         {/* Table with no built-in pagination controls */}
-      <Table 
-        columns={columns} 
-        dataSource={tests} 
-        rowKey="test_id" 
+      <Table
+        columns={columns}
+        dataSource={tests}
+        rowKey="test_id"
         loading={loading}
-        pagination={false}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalItems,
+          showSizeChanger: false
+        }}
+        onChange={(pagination) => {
+          setCurrentPage(pagination.current || 1);
+        }}
         scroll={{ x: 1300 }}
-        style={{ 
+        style={{
           borderRadius: '4px',
           overflow: 'hidden',
           border: `1px solid ${HSBC_COLORS.border}`
