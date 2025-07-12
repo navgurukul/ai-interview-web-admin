@@ -63,7 +63,7 @@ export default function QuestionsPage() {
   // Fetch job titles for dropdown
   const fetchJobTitles = async () => {
     try {
-      const response = await jobApi.getJobs(0, 100);
+      const response = await jobApi.getJobs(1, 100);
       if (response.code === '0' && response.data) {
         const titles = response.data.map(job => job.job_title);
         setJobTitles(titles);
