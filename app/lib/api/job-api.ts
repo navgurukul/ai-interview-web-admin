@@ -29,7 +29,7 @@ export interface UpdateJobRequest {
 // Job API
 export const jobApi = {
   // Get job list
-  async getJobs(page: number = 1, pageSize: number = 1000): Promise<ApiResponse<Job[]>> {
+  async getJobs(page: number = 1, pageSize: number = 10): Promise<ApiResponse<Job[]>> {
     try {
       const skip = (page - 1) * pageSize;
       const response = await fetch(`${API_BASE_URL}/job?skip=${skip}&limit=${pageSize}`);
@@ -38,13 +38,17 @@ export const jobApi = {
       if (result.code === '0' && result.data) {
         const fetchedItemsCount = result.data.length;
         let total_count = skip + fetchedItemsCount;
-        // A simplified mock pagination that assumes this is all the data
+        if (fetchedItemsCount === pageSize) {
+          // If we fetched a full page, assume there's at least one more item to simulate more pages.
+          // The real API should provide the true total_count.
+          total_count += 1;
+        }
         result.metadata = {
           total_count: total_count,
           current_page: page,
-          total_pages: page,
-          has_next: false,
-          has_previous: false,
+          total_pages: Math.ceil(total_count / pageSize),
+          has_next: total_count > page * pageSize,
+          has_previous: page > 1,
         };
       }
       return result;
