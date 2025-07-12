@@ -1,32 +1,57 @@
 import { NextResponse } from 'next/server';
 
-const EXTERNAL_API_URL = 'https://ghar-dev.navgurukul.org/get/zoho/students?min_value=1&max_value=500';
+const ZOHO_API_URL = 'https://ghar-dev.navgurukul.org/get/zoho/students';
 const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3VyYWpzYWhhbmlAbmF2Z3VydWt1bC5vcmciLCJpYXQiOjE3NTIyNDQ0ODcsImV4cCI6MTc2MDAyMDQ4N30.GTcACuZ_zhAiZ8762qyTKDJbgJKPT7lSVenbjKjAGEg';
+const PAGE_SIZE = 500; // The max_value per request
 
-export async function GET(request: Request) {
-  try {
-    const response = await fetch(EXTERNAL_API_URL, {
+async function fetchAllStudents() {
+  let allStudents: any[] = [];
+  let minValue = 1;
+  let hasMoreData = true;
+
+  while (hasMoreData) {
+    const url = `${ZOHO_API_URL}?min_value=${minValue}&max_value=${minValue + PAGE_SIZE - 1}`;
+    console.log(`Fetching from URL: ${url}`);
+
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
         'Authorization': AUTH_TOKEN,
       },
-      // It's good practice to consider caching strategies for external API calls
-      // cache: 'no-store', // or 'force-cache', or revalidate options
+      cache: 'no-store', // Ensure fresh data
     });
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('External API Error Body:', errorBody);
-      // Return a structured error that the client can understand
-      return NextResponse.json(
-        { message: `Error fetching data from Ghar API: ${response.status} ${response.statusText}`, details: errorBody },
-        { status: response.status }
-      );
+      console.error(`Error fetching page with min_value ${minValue}: ${response.status} ${response.statusText}`, errorBody);
+      // Stop fetching if one page fails
+      throw new Error(`Failed to fetch student data: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    const pageData = await response.json();
+
+    if (pageData && Array.isArray(pageData.Data) && pageData.Data.length > 0) {
+      allStudents = allStudents.concat(pageData.Data);
+      minValue += PAGE_SIZE;
+    } else {
+      // No more data to fetch
+      hasMoreData = false;
+    }
+  }
+
+  return allStudents;
+}
+
+export async function GET(request: Request) {
+  try {
+    const allStudents = await fetchAllStudents();
+
+    // Return the consolidated data in the same structure as the original API
+    return NextResponse.json({
+      Count: allStudents.length.toString(),
+      Data: allStudents,
+    });
 
   } catch (error) {
     console.error('Error in /api/ghar-students route:', error);

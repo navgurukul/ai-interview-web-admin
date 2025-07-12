@@ -112,10 +112,7 @@ const StudentDetailsSection: React.FC = () => {
           setError(responseData?.message || 'Fetched data is not in the expected array format.');
         }
 
-        // Filter for active students
-        const activeStudents = studentList.filter(student => student.Status === 'Active');
-
-        setStudents(activeStudents);
+        setStudents(studentList);
       } catch (err) {
         console.error('Error fetching student data:', err);
         setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching data.');
