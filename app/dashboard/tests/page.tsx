@@ -99,7 +99,7 @@ export default function TestsPage() {
   // Fetch user list
   const fetchUsers = async () => {
     try {
-      const response = await userApi.getUsers(0, 100);
+      const response = await userApi.getUsers(1, 100);
       if (response.code === '0' && response.data) {
         setUsers(response.data);
       }
@@ -111,7 +111,7 @@ export default function TestsPage() {
   // Fetch job list
   const fetchJobs = async () => {
     try {
-      const response = await jobApi.getJobs(0, 100);
+      const response = await jobApi.getJobs(1, 100);
       if (response.code === '0' && response.data) {
         setJobs(response.data);
       }
