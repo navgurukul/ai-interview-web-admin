@@ -184,6 +184,37 @@ const StudentDetailsSection: React.FC = () => {
     return Array.from(schools).sort();
   }, [allStudents]);
 
+  return (
+    <div style={{ padding: '20px' }}>
+      <Title level={2}>Student Details from Ghar</Title>
+      <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+        <Col>
+          <Select
+            allowClear
+            style={{ width: 200 }}
+            placeholder="Filter by Campus"
+            onChange={(value) => setSelectedCampus(value)}
+            value={selectedCampus}
+          >
+            {campusOptions.map(campus => (
+              <Option key={campus} value={campus}>{campus}</Option>
+            ))}
+          </Select>
+        </Col>
+        <Col>
+          <Select
+            allowClear
+            style={{ width: 200 }}
+            placeholder="Filter by School"
+            onChange={(value) => setSelectedSchool(value)}
+            value={selectedSchool}
+          >
+            {schoolOptions.map(school => (
+              <Option key={school} value={school}>{school}</Option>
+            ))}
+          </Select>
+        </Col>
+      </Row>
   const filteredStudents = useMemo(() => {
     return allStudents.filter(student => {
       const campusMatch = !selectedCampus || student.Select_Campus?.Campus_Name === selectedCampus;
