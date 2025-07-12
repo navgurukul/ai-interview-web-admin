@@ -109,7 +109,11 @@ const StudentDetailsSection: React.FC = () => {
           console.error('Fetched data.Data is not an array or is missing, and no fallback matched:', responseData);
           setError(responseData?.message || 'Fetched data is not in the expected array format.');
         }
-        setStudents(studentList);
+
+        // Filter for active students
+        const activeStudents = studentList.filter(student => student.Status === 'Active');
+
+        setStudents(activeStudents);
       } catch (err) {
         console.error('Error fetching student data:', err);
         setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching data.');
