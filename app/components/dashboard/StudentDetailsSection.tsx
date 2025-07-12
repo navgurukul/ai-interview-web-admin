@@ -121,52 +121,35 @@ const StudentDetailsSection: React.FC = () => {
     fetchStudentData();
   }, []);
 
-  // Define columns for the Ant Design Table
-  // These should be dynamically generated or adjusted based on the keys in the student data
-  // For now, let's assume some common fields.
-  const columns = [
+  // Define simplified columns for Name, Email, and Campus
+  const simplifiedColumns = [
     {
       title: 'Name',
-      dataIndex: 'name',
+      dataIndex: 'Name',
       key: 'name',
-      sorter: (a: Student, b: Student) => a.name.localeCompare(b.name),
+      // Render the display value from the Name object
+      render: (name: StudentName) => name?.zc_display_value || 'N/A',
+      sorter: (a: Student, b: Student) =>
+        (a.Name?.zc_display_value || '').localeCompare(b.Name?.zc_display_value || ''),
     },
     {
       title: 'Email',
-      dataIndex: 'email',
+      dataIndex: 'Navgurukul_Email',
       key: 'email',
-      sorter: (a: Student, b: Student) => (a.email || '').localeCompare(b.email || ''),
+      render: (email: string | null) => email || 'N/A',
+      sorter: (a: Student, b: Student) =>
+        (a.Navgurukul_Email || '').localeCompare(b.Navgurukul_Email || ''),
     },
-    // Add more columns as needed based on the actual data you want to display
-    // Example:
-    // {
-    //   title: 'Zoho ID',
-    //   dataIndex: 'Zoho_ID', // Ensure this key exists in your transformed student objects
-    //   key: 'Zoho_ID',
-    // },
-    // {
-    //   title: 'Mobile',
-    //   dataIndex: 'Mobile',
-    //   key: 'Mobile',
-    // }
+    {
+      title: 'Campus',
+      dataIndex: 'Select_Campus',
+      key: 'campus',
+      // Render the Campus_Name from the Select_Campus object
+      render: (campus: SelectCampus) => campus?.Campus_Name || 'N/A',
+      sorter: (a: Student, b: Student) =>
+        (a.Select_Campus?.Campus_Name || '').localeCompare(b.Select_Campus?.Campus_Name || ''),
+    },
   ];
-
-  // Dynamically create columns from the first student object's keys if students array is not empty
-  // This is a more robust way to handle varying API responses.
-  const dynamicColumns = students.length > 0
-    ? Object.keys(students[0])
-        .filter(key => key !== 'id' && key !== '_id') // Exclude 'id' or other internal keys if needed
-        .map(key => ({
-          title: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), // Format title
-          dataIndex: key,
-          key: key,
-          sorter: (a: Student, b: Student) => {
-            const valA = a[key] !== null && a[key] !== undefined ? String(a[key]) : '';
-            const valB = b[key] !== null && b[key] !== undefined ? String(b[key]) : '';
-            return valA.localeCompare(valB);
-          },
-        }))
-    : columns; // Fallback to predefined columns if no data or for initial render
 
 
   if (loading) {
@@ -182,12 +165,12 @@ const StudentDetailsSection: React.FC = () => {
       <Title level={2}>Student Details from Ghar</Title>
       <Table
         dataSource={students}
-        columns={dynamicColumns}
-        rowKey="id" // Ensure 'id' is unique and present for each student
+        columns={simplifiedColumns}
+        rowKey="ID" // Use the actual unique ID from the data
         bordered
         size="small"
         pagination={{ pageSize: 10 }}
-        scroll={{ x: 'max-content' }} // For horizontal scrolling if many columns
+        scroll={{ x: 'max-content' }}
       />
       {students.length === 0 && !loading && <Alert message="No student data found." type="info" />}
     </div>
